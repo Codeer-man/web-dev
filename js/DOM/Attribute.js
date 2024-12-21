@@ -1,0 +1,5 @@
+console.log(something.Attribute)
+console.log(something.getAttribute())
+console.log(something.hasAttribute())
+console.log(something.setAttribute())
+console.log(something.removeAttribute())
