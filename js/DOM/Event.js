@@ -1,9 +1,12 @@
 onclick
+onsubmit
+onabort
+onchange
 
 addEventListener(event, function)
 removeEventListener(event, function)
 
-event type
+// event type
 mousemove
 doubleClick
 mouseover

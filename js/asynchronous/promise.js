@@ -12,6 +12,7 @@
 
 // Pending in promise
 // then and catch
+
 // const promise2 = new Promise((resolve, reject) => {
 //   const num = Math.floor(Math.random() * 100);
 
@@ -34,18 +35,20 @@
 
 // promise all
 
-const promiseONe = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("promise one resolved");
-  }, 2000);
-});
+// const promiseONe = new Promise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve("promise one resolved");
+//   }, 2000);
+// });
 
-const promiseTwo = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("promise Two resolved");
-  }, 2000);
-});
+// const promiseTwo = new Promise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve("promise Two resolved");
+//   }, 2000);
+// });
 
-Promise.all([promiseONe, promiseTwo])
-  .then((value) => console.log(value[0], value[1]))
-  .catch((err) => console.error(err));
+// Promise.all([promiseONe, promiseTwo])
+//   .then((value) => console.log(value[0], value[1]))
+//   .catch((err) => console.error(err));
+
+
