@@ -33,6 +33,15 @@ export default function Navbar() {
           </li>
           <li>
             <NavLink
+              to="/aboutus"
+              className="text-black text-lg relative hover:text-white transition-transform transform hover:scale-110 duration-300"
+              activeClassName="underline decoration-2 decoration-white"
+            >
+              About us
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="/Contact"
               className="text-black text-lg relative hover:text-white transition-transform transform hover:scale-110 duration-300"
               activeClassName="underline decoration-2 decoration-white"
