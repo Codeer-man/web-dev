@@ -114,7 +114,7 @@ export default function auth() {
         >
           <button
             type="button"
-            onSubmit={handleRegister}
+            onSubmit={handleSubmit}
             style={{
               width: "48%",
               padding: "10px",
