@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Product from "./pages/Product";
+import LogIn from "./pages/LogIn";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="About" element={<About />} />
         <Route path="Contact" element={<Contact />} />
         <Route path="Product" element={<Product />} />
+        <Route path="LogIn" element={<LogIn />} />
       </Route>
     )
   );
