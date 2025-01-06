@@ -4,8 +4,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  // createBrowserRouter,
-  // createRoutesFromChildren,
 } from "react-router-dom";
 import Home from "./pages/Home";
 import Aboutus from "./pages/Aboutus";
@@ -13,20 +11,12 @@ import Services from "./pages/Services";
 import Contact from "./pages/contactus";
 import LogIn from "./pages/login";
 import Error from "./pages/Error";
-// import RouteLayout from "./Layout/RouteLayout";
-
+import UseCase from "./pages/UseCase";
+import DataProvider from "./pages/DatProvider";
+import { Children, useContext } from "react";
 function App() {
-  // const browser = createBrowserRouter(
-  //   createRoutesFromChildren(
-  //     <Route path="/" element={<RouteLayout />}>
-  //       <Route index element={<Home />} errorElement={<Error />} />
-  //       <Route path="aboutus" element={<Aboutus />} />
-  //       <Route path="service" element={<Services />} />
-  //       <Route path="contact" element={<Contact />} />
-  //       <Route path="login" element={<LogIn />} />
-  //     </Route>
-  //   )
-  // );
+
+  const data = useContext(DataProvider)
   return (
     <Router>
       <Navbar />
@@ -36,8 +26,13 @@ function App() {
         <Route path="/service" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<LogIn />} />
+        <Route path="/UseCase" element={<UseCase />} />
+        <Route path="/DataProvider" element={<DataProvider />} />
       </Routes>
       <Footer />
+      <DataProvider>
+        {Children}
+      </DataProvider>
     </Router>
   );
 }

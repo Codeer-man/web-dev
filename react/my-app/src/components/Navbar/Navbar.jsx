@@ -58,6 +58,22 @@ export default function Navbar() {
               LogIn
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/UseCase"
+              className="text-black text-lg relative hover:text-white transition-transform transform hover:scale-110 duration-300"
+              activeClassName="underline decoration-2 decoration-white"
+            >
+              UseCase
+            </NavLink>
+            <NavLink
+              to="/DataProvider"
+              className="text-black text-lg relative hover:text-white transition-transform transform hover:scale-110 duration-300"
+              activeClassName="underline decoration-2 decoration-white"
+            >
+              DataProvider
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
