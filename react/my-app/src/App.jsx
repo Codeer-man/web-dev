@@ -7,6 +7,8 @@ import Services from "./pages/Services";
 import Contact from "./pages/contactus"; // Renamed for consistency
 import Login from "./pages/Login";
 import Usecase from "./pages/Usecase";
+import Form from "./pages/useRef";
+import UseReduce from "./pages/useReduce";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/usecase" element={<Usecase />} />
+        <Route path="/useRef" element={<Form />} />
+        <Route path="/useReducer" element={<UseReduce />} />
       </Routes>
       <Footer />
     </Router>
