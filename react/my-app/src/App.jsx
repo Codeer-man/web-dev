@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import Usecase from "./pages/Usecase";
 import Form from "./pages/useRef";
 import UseReduce from "./pages/useReduce";
-
+import Callback from "./pages/Callback";
 function App() {
   return (
     <Router>
@@ -24,6 +24,7 @@ function App() {
         <Route path="/usecase" element={<Usecase />} />
         <Route path="/useRef" element={<Form />} />
         <Route path="/useReducer" element={<UseReduce />} />
+        <Route path="/callback" element={<Callback />}></Route>
       </Routes>
       <Footer />
     </Router>
