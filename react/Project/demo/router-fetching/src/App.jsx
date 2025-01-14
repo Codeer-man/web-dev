@@ -10,6 +10,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Product from "./pages/Product";
 import LogIn from "./pages/LogIn";
+import Previous from "./components/hooks/useRef/BGcolor";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="Contact" element={<Contact />} />
         <Route path="Product" element={<Product />} />
         <Route path="LogIn" element={<LogIn />} />
+        <Route path="focus" element={<Previous />}></Route>
       </Route>
     )
   );
