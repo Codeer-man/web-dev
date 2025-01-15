@@ -9,7 +9,8 @@ import Login from "./pages/Login";
 import Usecase from "./pages/Usecase";
 import Form from "./pages/useRef";
 import UseReduce from "./pages/useReduce";
-import Callback from "./pages/Callback";
+import Debounce from "./pages/Debounce";
+import Memo from "./pages/memo"
 function App() {
   return (
     <Router>
@@ -18,13 +19,13 @@ function App() {
         {/* Define routes */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutUs />} />
-        <Route path="/services" element={<Services />} />
+        <Route path="/service" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/usecase" element={<Usecase />} />
         <Route path="/useRef" element={<Form />} />
         <Route path="/useReducer" element={<UseReduce />} />
-        <Route path="/callback" element={<Callback />}></Route>
+        <Route path="/Memo" element={<Memo />}></Route>
       </Routes>
       <Footer />
     </Router>
