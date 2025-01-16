@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-const products = [
+const InitialProducts = [
   { id: 1, name: "Laptop", category: "Electronics", price: 999 },
   { id: 2, name: "Shoes", category: "Clothing", price: 59 },
   { id: 3, name: "Phone", category: "Electronics", price: 799 },
@@ -13,8 +13,15 @@ const products = [
 
 function ProductTable() {
   //state
+  const [products, setProducts] = useState(InitialProducts);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    category: "",
+    price: "",
+  });
 
   const filteredAndSortedProducts = useMemo(() => {
     const filtered = products.filter((product) =>
@@ -30,7 +37,7 @@ function ProductTable() {
     });
 
     return sorted;
-  }, [searchTerm, sortOrder]);
+  }, [searchTerm, sortOrder, products]);
 
   //handle search
   const handleSearchChange = (e) => {
@@ -40,6 +47,43 @@ function ProductTable() {
   //handle sort
   const handleSortChange = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+
+  const handleInputChange = (prev) => {
+    const { name, value } = prev.target;
+
+    setNewProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+
+    // Validate input
+    if (!newProduct.name || !newProduct.category || !newProduct.price) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // Add new product
+    setProducts((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        name: newProduct.name,
+        category: newProduct.category,
+        price: parseFloat(newProduct.price),
+      },
+    ]);
+
+    // Clear form fields
+    setNewProduct({
+      name: "",
+      category: "",
+      price: "",
+    });
   };
 
   return (
@@ -76,6 +120,32 @@ function ProductTable() {
           ))}
         </tbody>
       </table>
+
+      <h1>Add product</h1>
+      <form onSubmit={handleAddProduct}>
+        <input
+          type="text"
+          placeholder="Name"
+          onChange={handleInputChange}
+          value={newProduct.name}
+          name="name"
+        />
+        <input
+          type="text"
+          placeholder="Category"
+          onChange={handleInputChange}
+          value={newProduct.category}
+          name="category"
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          onChange={handleInputChange}
+          value={newProduct.price}
+          name="price"
+        />
+        <button type="submit">Add Product</button>
+      </form>
     </div>
   );
 }
