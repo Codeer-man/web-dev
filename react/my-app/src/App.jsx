@@ -9,14 +9,18 @@ import Login from "./pages/Login";
 import Usecase from "./pages/Usecase";
 import Form from "./pages/useRef";
 import UseReduce from "./pages/useReduce";
-import Debounce from "./pages/Debounce";
-import Memo from "./pages/memo"
+import Memo from "./pages/memo";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminOrder from "./pages/Admin/AdminOrder";
+import Product from "./pages/Admin/Product";
+import NotFound from "./components/NotFound";
+
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
-        {/* Define routes */}
+        {/* Main routes */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/service" element={<Services />} />
@@ -25,7 +29,15 @@ function App() {
         <Route path="/usecase" element={<Usecase />} />
         <Route path="/useRef" element={<Form />} />
         <Route path="/useReducer" element={<UseReduce />} />
-        <Route path="/Memo" element={<Memo />}></Route>
+        <Route path="/Memo" element={<Memo />} />
+
+        {/* Admin routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="order" element={<AdminOrder />} />
+          <Route path="productlist" element={<Product />} />
+        </Route>
+
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
       <Footer />
     </Router>
