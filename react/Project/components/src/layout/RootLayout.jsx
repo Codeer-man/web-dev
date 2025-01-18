@@ -15,6 +15,9 @@ function RootLayout() {
             <li>
               <NavLink to="/randomcolor">Random color</NavLink>
             </li>
+            <li>
+              <NavLink to="/rating">Star ratingr</NavLink>
+            </li>
           </ul>
         </nav>
       </header>
