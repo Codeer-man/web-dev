@@ -18,6 +18,9 @@ function RootLayout() {
             <li>
               <NavLink to="/rating">Star ratingr</NavLink>
             </li>
+            <li>
+              <NavLink to="/imageSlider">image slider</NavLink>
+            </li>
           </ul>
         </nav>
       </header>

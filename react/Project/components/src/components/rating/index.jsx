@@ -13,7 +13,7 @@ export default function Rating({ stars = 5 }) {
     setHover(e);
   }
 
-  function handleMouseLeave(e) {
+  function handleMouseLeave() {
     setHover(rating);
   }
 

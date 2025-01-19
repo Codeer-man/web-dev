@@ -9,19 +9,23 @@ import {
 import RootLayout from "./layout/RootLayout";
 import { NotFound } from "./layout/NotFound";
 import Rating from "./components/rating";
+import ImageSlider from "./components/imageSlider";
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
         <Route path="/accodion" element={<Accodion />} />
         <Route path="/randomcolor" element={<RandomColorGen />} />
-        <Route path="/rating" element={<Rating  stars={10}/>} />
-        
-        
+        <Route path="/rating" element={<Rating stars={10} />} />
+        <Route
+          path="/imageSlider"
+          element={
+            <ImageSlider url={"https://picsum.photos/v2/list"} limit={"10"} />
+          }
+        />
+
         <Route path="*" element={<NotFound />} />
       </Route>
-
-      
     )
   );
   return (
