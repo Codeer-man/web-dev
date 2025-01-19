@@ -14,6 +14,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import AdminOrder from "./pages/Admin/AdminOrder";
 import Product from "./pages/Admin/Product";
 import NotFound from "./components/NotFound";
+import Cart from "./pages/cart";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/useRef" element={<Form />} />
         <Route path="/useReducer" element={<UseReduce />} />
         <Route path="/Memo" element={<Memo />} />
+        <Route path="/cart" element={<Cart />} />
 
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
