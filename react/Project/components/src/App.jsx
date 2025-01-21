@@ -11,6 +11,8 @@ import { NotFound } from "./layout/NotFound";
 import Rating from "./components/rating";
 import ImageSlider from "./components/imageSlider";
 import LoadMore from "./components/LoadMore";
+import SlideMenu from "./components/tree-view";
+
 
 function App() {
   const router = createBrowserRouter(
@@ -26,6 +28,8 @@ function App() {
           }
         />
         <Route path="/loadMore" element={<LoadMore />} />
+        <Route path="menu" element={<SlideMenu />} />
+
 
         <Route path="*" element={<NotFound />} />
       </Route>
