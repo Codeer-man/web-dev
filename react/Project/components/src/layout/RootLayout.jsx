@@ -21,6 +21,9 @@ function RootLayout() {
             <li>
               <NavLink to="/imageSlider">image slider</NavLink>
             </li>
+            <li>
+              <NavLink to="/loadMore">Load more button</NavLink>
+            </li>
           </ul>
         </nav>
       </header>

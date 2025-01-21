@@ -10,6 +10,8 @@ import RootLayout from "./layout/RootLayout";
 import { NotFound } from "./layout/NotFound";
 import Rating from "./components/rating";
 import ImageSlider from "./components/imageSlider";
+import LoadMore from "./components/LoadMore";
+
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -23,6 +25,7 @@ function App() {
             <ImageSlider url={"https://picsum.photos/v2/list"} limit={"10"} />
           }
         />
+        <Route path="/loadMore" element={<LoadMore />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
