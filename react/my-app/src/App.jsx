@@ -15,6 +15,7 @@ import AdminOrder from "./pages/Admin/AdminOrder";
 import Product from "./pages/Admin/Product";
 import NotFound from "./components/NotFound";
 import Cart from "./pages/cart";
+import Auth from "./store/auth";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="order" element={<AdminOrder />} />
           <Route path="productlist" element={<Product />} />
         </Route>
+        <Route path="/auth" element={<Auth/>}/>
 
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
