@@ -5,22 +5,25 @@ import {
   increaseByAmount,
   increment,
 } from "./features/counter/CounterSlice";
+import AddTodo from "./components/AddTodo";
+import { FilterButtons } from "./components/FilterBtn";
+import { TodoList } from "./components/todoList";
 
 export default function App() {
-  const [amount, setAmount] = useState();
-  const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  // const [amount, setAmount] = useState();
+  // const count = useSelector((state) => state.counter.value);
+  // const dispatch = useDispatch();
 
-  function handleIncrement() {
-    dispatch(increment());
-  }
+  // function handleIncrement() {
+  //   dispatch(increment());
+  // }
 
-  function handleDecrement() {
-    dispatch(decrement());
-  }
+  // function handleDecrement() {
+  //   dispatch(decrement());
+  // }
   return (
     <div>
-      <button onClick={handleIncrement}> +</button>
+      {/* <button onClick={handleIncrement}> +</button>
       <p>counter :{count}</p>
       <button onClick={handleDecrement}>-</button>
 
@@ -36,7 +39,11 @@ export default function App() {
         }}
       >
         Inc by Amt
-      </button>
+      </button> */}
+
+      <AddTodo />
+      <FilterButtons />
+      <TodoList />
     </div>
   );
 }
