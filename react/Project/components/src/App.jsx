@@ -12,6 +12,7 @@ import Rating from "./components/rating";
 import ImageSlider from "./components/imageSlider";
 import LoadMore from "./components/LoadMore";
 import SlideMenu from "./components/tree-view";
+import QrCodeGenerator from "./components/QRcode";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         />
         <Route path="/loadMore" element={<LoadMore />} />
         <Route path="menu" element={<SlideMenu />} />
+        <Route path="/qrcode" element={<QrCodeGenerator />} />
 
 
         <Route path="*" element={<NotFound />} />

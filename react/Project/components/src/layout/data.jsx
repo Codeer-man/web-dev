@@ -6,6 +6,7 @@ const navLinks = [
   { id: 5, path: "/imageSlider", label: "Image Slider" },
   { id: 6, path: "/loadMore", label: "Load More Button" },
   { id: 7, path: "/menu", label: "Sidebar Menu" },
+  { id: 8, path: "/qrcode", label: "QRCode" },
 ];
 
 export default navLinks;
