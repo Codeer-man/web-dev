@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./router/auth-router.js";
+// const router = require("./router/auth-router");
 const app = express();
 
 app.use(express.json());
