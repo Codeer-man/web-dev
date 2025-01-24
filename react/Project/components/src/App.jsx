@@ -13,6 +13,7 @@ import ImageSlider from "./components/imageSlider";
 import LoadMore from "./components/LoadMore";
 import SlideMenu from "./components/tree-view";
 import QrCodeGenerator from "./components/QRcode";
+import ThemeChanger from "./components/ThemeChanger";
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/loadMore" element={<LoadMore />} />
         <Route path="menu" element={<SlideMenu />} />
         <Route path="/qrcode" element={<QrCodeGenerator />} />
+        <Route path="/theme" element={<ThemeChanger />} />
 
 
         <Route path="*" element={<NotFound />} />
