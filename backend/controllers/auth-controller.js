@@ -1,37 +1,34 @@
+const User = require("../models/user-model.js");
+
 const home = async (req, res) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: "invalie server error" });
+    res.status(500).json({ msg: "Invalid server error" });
   }
 };
 
-// creataing register
 const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log(req.body);
+    const { username, email, phone, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ msg: "all fiels are required" });
-    } else if (!email.includes("@") && !email.endWith(".com")) {
-      return res.status(400).json({ msg: "add @ and .com in it" });
-    } else if (password.length > 8) {
+    const UserExist = await User.findOne({ email });
+
+    if (UserExist) {
       return res
         .status(400)
-        .json({ msg: "password must be at least 8 characters" });
+        .json({ msg: "User already exists with this email" });
     }
 
-    console.log("rgister sucessful \n Email:", email);
-    console.log("Password:", password);
-
+    const UserCreated = await User.create({ username, email, phone, password });
     return res
-      .status(200)
-      .json({ msg: "register sucessful", user: { email, password } });
+      .status(201)
+      .json({ msg: "User registered successfully", user: UserCreated });
   } catch (error) {
-    console.error("error during registration", error.message);
-    res.status(500).json({ msg: "invalie server error" });
+    res.status(500).json({ msg: "internal server error" });
   }
 };
-export default { home, register };
-// module.exports = { home, register };
+
+module.exports = { home, register };
