@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
-
+import mongoose from 'mongoose';  // Correct import syntax
+import bcrypt from 'bcryptjs';  // Correct import syntax
+import jwt from 'jsonwebtoken';  // Correct import syntax
+import dotenv from 'dotenv';
 dotenv.config();
 
-// Define user schema
+// Define the User schema
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -14,7 +13,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: true,  // Optional, but a good practice to make the email unique
   },
   phone: {
     type: String,
@@ -30,54 +29,54 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save middleware for password hashing
-userSchema.pre("save", async function (next) {
+// Password Hashing: The pre middleware is defined within the userSchema before creating the User model.
+userSchema.pre('save', async function (next) {
+  const user = this;
+  console.log('actual data ', this);
+
+  if (!user.isModified('password')) {
+    return next();
+  }
+
   try {
-
-    if (!this.isModified("password")) {
-      return next();
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-
-    next();
+    const saltRound = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(user.password, saltRound);
+    user.password = hashedPassword;
+    next();  // Proceed with saving the user document
   } catch (error) {
-    console.error("Error hashing password:", error);
-    next(error);
+    return next(error);
   }
 });
 
-// Compare password method
+// Compare the provided password with the hashed password stored in the database
 userSchema.methods.comparePassword = async function (password) {
   try {
-    return await bcrypt.compare(password, this.password);
+    return await bcrypt.compare(password, this.password); // Compare the plain password with the hashed password
   } catch (error) {
-    console.error("Error comparing passwords:", error);
-    throw new Error("Failed to compare passwords");
+    throw new Error('Error comparing password');
   }
 };
 
-// Generating JSON Web Token
-userSchema.methods.generateAuthToken = function () {
-  console.log("Generating JSON Web Token...");
+// Generate JSON Web Token
+userSchema.methods.generateToken = async function () {
+  console.log('Token Generated');
+  console.log('JWT Secret Key:', process.env.JWT_SECRET_KEY); // Check if secret is loaded
   try {
-    const token = jwt.sign(
+    return jwt.sign(
       {
         userId: this._id.toString(),
         email: this.email,
         isAdmin: this.isAdmin,
       },
-      process.env.JWT_SECRET_TOKEN,
-      { expiresIn: "30d" } // Token expiry
+      process.env.JWT_SECRET_KEY, // Ensure the secret key is available
+      { expiresIn: '30d' }
     );
-
-    console.log("JSON Web Token generated successfully.");
-    return token;
   } catch (error) {
-    console.error("Error generating token:", error);
-    throw new Error("Failed to generate token");
+    console.error('Token Error: ', error);
   }
 };
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+// Define the model or the collection name
+const User = mongoose.model('USER', userSchema);
+
+export default User;  // Correct export syntax

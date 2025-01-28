@@ -1,55 +1,71 @@
-const User = require("../models/user-model.js");
+import User from "../models/user-model.js"; // Correct import statement
 
+// Creating home controller
 const home = async (req, res) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
-    console.error("Error in home route:", error); // Improved logging
-    res.status(500).json({ msg: "Internal server error" });
+    console.log(error);
   }
 };
 
+// Creating register controller
 const register = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Debugging request body
+    console.log(req.body);
     const { username, email, phone, password } = req.body;
 
-    // Validate input fields
-    if (!username || !email || !phone || !password) {
-      return res.status(400).json({ msg: "All fields are required" });
+    const userExist = await User.findOne({ email });
+
+    if (userExist) {
+      return res.status(400).json({ msg: "Email already exists" });
     }
 
-    // Check if the user already exists
-    const UserExist = await User.findOne({ email });
-    if (UserExist) {
-      return res
-        .status(400)
-        .json({ msg: "User already exists with this email" });
-    }
+    const userCreated = await User.create({ username, email, phone, password });
 
-    // Create a new user
-    const UserCreated = new User({ username, email, phone, password });
+    const token = await userCreated.generateToken();
+    console.log("Generated Token: ", token); // Log the token to the console
 
-    // Generate the token
-    const token = await UserCreated.generateAuthToken();
-
-    // Save the user to the database
-    await UserCreated.save();
-
-    // Send response
-    return res.status(201).json({
-      msg: "User registered successfully",
-      user: {
-        id: UserCreated._id,
-        username: UserCreated.username,
-        email: UserCreated.email,
-      },
-      token,
+    res.status(201).json({
+      msg: "Registration success full",
+      token: token,
+      userId: userCreated._id.toString(),
     });
   } catch (error) {
-    console.error("Error during registration:", error); // Improved logging
-    res.status(500).json({ msg: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-module.exports = { home, register };
+//creating login
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const userExist = await User.findOne({ email });
+
+    if (!userExist) {
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
+
+    // Compare password using the comparePassword method
+    const isPasswordValid = await userExist.comparePassword(password);
+
+    if (isPasswordValid) {
+      // Generate a token if the password is valid
+      const token = await userExist.generateToken();
+      res.status(200).json({
+        message: 'Login successful',
+        token: token,
+        userId: userExist._id.toString(),
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export default { home, register, login };
