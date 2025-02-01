@@ -4,7 +4,7 @@ const adminMiddleware = require("../middleware/admin-middleware");
 
 const router = express.Router();
 
-router.get("/user-info", authmiddleware, adminMiddleware, (req, res) => {
+router.get("/user-info", authmiddleware, (req, res) => {
   const { username, userId, role } = req.userInfos;
 
   res.json({
