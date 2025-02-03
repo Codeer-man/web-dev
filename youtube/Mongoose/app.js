@@ -68,16 +68,19 @@ async function runQueryExample() {
 
     // const countdoc = await User.countDocuments({isActive : false})
     // console.log(countdoc);
-    
+
     // const deletedoc = await User.deleteOne({_id: '67964221e0352bbb65c5f76c'})
     // console.log(deletedoc);
-    
-    const updatedoc = await User.updateOne({_id: '679640efd5963871485fb2c9'}, {
-      $set : {age: 100 }, $push:{tags: 'updated'}
-    },{new: true});
-    console.log(updatedoc);
-    
 
+    const updatedoc = await User.updateOne(
+      { _id: "679640efd5963871485fb2c9" },
+      {
+        $set: { age: 100 },
+        $push: { tags: "updated" },
+      },
+      { new: true }
+    );
+    console.log(updatedoc);
   } catch (error) {
     console.log("error in the queryExample");
   } finally {

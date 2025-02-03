@@ -7,19 +7,6 @@ const hashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
 
-// const generateToken = (user) => {
-
-//   return jwt.sign(
-//     {
-//       userId: user._id,
-//       username: user.username,
-//       role: user.role || "user",
-//     },
-//     process.env.JWT_SECRET_KEY,
-//     { expiresIn: "15m" }
-//   );
-// };
-
 // register controller
 const registerUser = async (req, res) => {
   try {
