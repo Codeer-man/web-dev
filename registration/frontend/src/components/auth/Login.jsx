@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../store/auth";
 
 export default function LogIn() {
   const navigate = useNavigate();
@@ -9,10 +10,11 @@ export default function LogIn() {
     password: "",
   });
 
+  const [error, setError] = useState({});
+  const { storetokenInLs } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(login);
-
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
@@ -26,17 +28,18 @@ export default function LogIn() {
 
       if (!response.ok) {
         console.error("HTTP error:", data.error);
-        alert(data.error || "Login failed!");
+        setError({ message: data?.message || "something went wrong" });
         return;
       }
+      storetokenInLs(data.token); // OR
 
-      alert("Login successful!");
-      // setLogin({ username: "", password: "" });
-
+      setLogin({ username: "", password: "" });
       navigate("/");
+
+      // toast.success("Login successful!");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
+      setError({ message: "Network error. Please try again" });
     }
   };
 
@@ -63,6 +66,9 @@ export default function LogIn() {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            {error.message && (
+              <div className="text-red-600">{error.message}</div>
+            )}
           </div>
           <div className="mb-4">
             <input
@@ -74,6 +80,9 @@ export default function LogIn() {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            {error.message && (
+              <div className="text-red-600">{error.message}</div>
+            )}
           </div>
           <button
             type="submit"

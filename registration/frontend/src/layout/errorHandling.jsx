@@ -1,11 +1,13 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ErrorHandling() {
+  const navigate = useNavigate();
+
   return (
     <div>
       <h1>404 Page not found</h1>
-      <NavLink to={"/"}>Go to home page</NavLink>
+      <button onClick={() => navigate("/")}>Go to home page</button>
     </div>
   );
 }
