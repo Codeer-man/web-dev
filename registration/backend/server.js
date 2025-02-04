@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const ConnectDb = require("./utils/db");
 const authRoutes = require("./routes/auth-routes");
+const errormiddleware = require("./middleware/error-middleware");
 
 const app = express();
 
@@ -20,6 +21,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/api/auth", authRoutes);
+
+app.use(errormiddleware);
 
 const PORT = 3000;
 app.listen(PORT, () => {
