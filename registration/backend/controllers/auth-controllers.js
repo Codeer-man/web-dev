@@ -28,6 +28,7 @@ const registerUser = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "New user has been created",
+      token: await newUser.generateToken(),
       data: newUser,
     });
   } catch (error) {
@@ -60,12 +61,12 @@ const loginUser = async (req, res) => {
     }
 
     // Generate JWT token after successful authentication
-    const token = await user.generateToken();
+    // const token = await user.generateToken();
 
     return res.status(200).json({
       success: true,
       message: "Successfully logged in",
-      token,
+      token: await user.generateToken(),
       userId: user._id.toString(),
     });
   } catch (error) {

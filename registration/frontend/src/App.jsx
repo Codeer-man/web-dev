@@ -13,6 +13,8 @@ import Contact from "./pages/Contactus";
 import Register from "./components/auth/register";
 import Login from "./components/auth/Login";
 
+import Logout from "./components/auth/logout";
+
 import Notfound from "./layout/errorHandling";
 
 const routes = createBrowserRouter(
@@ -24,6 +26,8 @@ const routes = createBrowserRouter(
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      <Route path="/logout" element={<Logout />} />
 
       <Route path="*" element={<Notfound />} />
     </Route>
