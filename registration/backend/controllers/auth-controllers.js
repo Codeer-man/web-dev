@@ -83,7 +83,7 @@ const userController = async (req, res) => {
     const userdata = req.user;
     console.log(userdata);
     return res.status(200).json({
-      msg: userdata,
+      userdata,
     });
   } catch (error) {
     console.error("Something went wrong", error);

@@ -3,36 +3,47 @@ const User = require("../models/auth-modles");
 
 const Authmiddleware = async (req, res, next) => {
   try {
-    const token = req.header("Authorization");
+    const authHeader = req.header("Authorization");
 
-    if (!token) {
-      res.status(401).json({
-        msg: "token not provided or received",
+    if (!authHeader) {
+      return res.status(401).json({
+        msg: "Token not provided",
       });
     }
-    const jwtoken = token.replace("Bearer", "").trim();
 
-    const isverified = jwt.verify(jwtoken, process.env.JWT_SECRET_KEY);
+    // Ensure token starts with "Bearer "
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        msg: "Invalid token format",
+      });
+    }
 
-    const Userdata = await User.findOne({ email: isverified.email }).select({
-      password: 0,
-    });
+    const jwtoken = authHeader.replace("Bearer ", "").trim();
+
+    let isverified;
+    try {
+      isverified = jwt.verify(jwtoken, process.env.JWT_SECRET_KEY);
+    } catch (err) {
+      return res.status(401).json({ msg: "Invalid or expired token" });
+    }
+
+    const Userdata = await User.findOne({ email: isverified.email }).select(
+      "-password"
+    );
 
     if (!Userdata) {
       return res.status(404).json({ msg: "User not found" });
     }
-    console.log(Userdata);
 
-    req.token = token;
+    req.token = jwtoken;
     req.user = Userdata;
     req.id = Userdata._id;
 
-    next();
+    next(); // Move to the next middleware
   } catch (error) {
-    console.log(error);
-
+    console.error("Auth Middleware Error:", error);
     res.status(500).json({
-      msg: "invalid server error",
+      msg: "Internal server error",
     });
   }
 };
