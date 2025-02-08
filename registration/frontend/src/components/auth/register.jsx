@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/auth";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function Register() {
 
   const [error, setError] = useState({});
 
-  const {storetokenInLs} = useAuth();
+  const { storetokenInLs } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,19 +30,14 @@ export default function Register() {
       });
 
       const data = await response.json();
-      if (!response.ok) {
-        console.error(`Error: ${data.message}`);
-        setError({ message: data.message });
-        return;
+      if (response.ok) {
+        storetokenInLs(data.token); // createContext
+        setRegister({ username: "", email: "", phone: "", password: "" });
+        navigate("/login");
+        toast.success("Sucessfully registered");
+      } else {
+        toast.error(data.message);
       }
-
-      storetokenInLs(data.token); // createContext
-      localStorage.setItem("token", data.token);
-
-      setRegister({ username: "", email: "", phone: "", password: "" });
-      navigate("/login");
-
-      toast.success("");
     } catch (error) {
       console.error("something went wrong", error);
       setError({ message: "Network error. Please try again later." });
@@ -69,7 +65,6 @@ export default function Register() {
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {error.message && <div className="text-red-600">{error.message}</div>}
         </div>
 
         <div className="mb-4">
@@ -81,7 +76,6 @@ export default function Register() {
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {error.message && <div className="text-red-600">{error.message}</div>}
         </div>
 
         <div className="mb-4">
@@ -93,7 +87,6 @@ export default function Register() {
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {error.message && <div className="text-red-600">{error.message}</div>}
         </div>
 
         <div className="mb-4">
@@ -105,7 +98,6 @@ export default function Register() {
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {error.message && <div className="text-red-600">{error.message}</div>}
         </div>
 
         <button

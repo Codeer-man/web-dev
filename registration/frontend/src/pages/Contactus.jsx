@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../store/auth";
+import { toast } from "react-toastify";
 
 export default function Contactus() {
   const [formData, setFormData] = useState({
@@ -32,11 +33,11 @@ export default function Contactus() {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        alert("Message sent successfully!");
+        toast.success("Message sent successfully!");
         setFormData({ message: "" });
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
       console.error(error);
     }
   };
