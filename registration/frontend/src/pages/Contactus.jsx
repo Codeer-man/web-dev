@@ -31,15 +31,10 @@ export default function Contactus() {
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        console.error("error while responsing");
-
-        return;
+      if (response.ok) {
+        alert("Message sent successfully!");
+        setFormData({ message: "" });
       }
-
-      alert("Message sent successfully!");
-      setFormData({ message: "" });
     } catch (error) {
       alert("Something went wrong. Please try again.");
       console.error(error);
