@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../store/auth";
 
 export default function Contactus() {
   const [formData, setFormData] = useState({
@@ -7,7 +8,17 @@ export default function Contactus() {
     message: "",
   });
 
-  const [error, setErrors] = useState({});
+  const [userData, setuserData] = useState(true);
+
+  const { user } = useAuth();
+
+  if (userData && user) {
+    setFormData({
+      username: user.username,
+      email: user.email,
+    });
+    setuserData(false);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,16 +32,14 @@ export default function Contactus() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
       if (!response.ok) {
-        setErrors({ message: data.message });
+        console.error("error while responsing");
+
         return;
       }
 
       alert("Message sent successfully!");
-      console.log(formData);
-      setFormData({ username: "", email: "", message: "" });
-      setErrors({});
+      setFormData({ message: "" });
     } catch (error) {
       alert("Something went wrong. Please try again.");
       console.error(error);
@@ -54,10 +63,8 @@ export default function Contactus() {
               placeholder="Username"
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              disabled
             />
-            {error.message && (
-              <div className="text-red-600">{error.message}</div>
-            )}
             <input
               type="email"
               name="email"
@@ -65,10 +72,8 @@ export default function Contactus() {
               placeholder="Email"
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              disabled
             />
-            {error.message && (
-              <div className="text-red-600">{error.message}</div>
-            )}
             <textarea
               name="message"
               value={formData.message}
@@ -76,9 +81,7 @@ export default function Contactus() {
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            {error.message && (
-              <div className="text-red-600">{error.message}</div>
-            )}
+
             <button
               type="submit"
               className="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none cursor-pointer"
