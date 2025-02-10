@@ -1,19 +1,23 @@
-const User = require("../models/auth-modles");
-
 const isAdmin = async (req, res, next) => {
   try {
-    // const {role} = req.body
-    if (User.role === "User") {
-      return res.status(400).json({
-        message: "only Admin are allowed in this page",
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized: No user found" });
+    }
+
+    const userRole = req.user.role;
+
+    if (userRole !== "admin") {
+      return res.status(403).json({
+        message: "Access Denied: Only admins are allowed",
       });
     }
-    next();
+
+    next(); // Allow the request to continue if user is an admin
   } catch (error) {
+    console.error("Error in isAdmin middleware:", error);
+    res.status(500).json({ message: "Internal Server Error" });
     next(error);
-    res.status(400).json({
-      error: error,
-    });
   }
 };
+
 module.exports = isAdmin;
