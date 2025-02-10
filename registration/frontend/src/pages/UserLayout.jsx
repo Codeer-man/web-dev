@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../store/auth";
+import { Link } from "react-router-dom";
 
 export default function UserLayout() {
   const [user, setUser] = useState([]);
@@ -18,6 +19,28 @@ export default function UserLayout() {
       if (response.ok) {
         const data = await response.json();
         setUser(data.data);
+        console.log("this is ", data.data);
+      }
+    } catch (error) {
+      console.error("Something went wrong:", error);
+    }
+  };
+
+  const deleteUser = async (_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/admin/deleteUser/${_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: authorizeToken,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser((prevdata) => prevdata.filter((user) => user._id !== _id));
         console.log("this is ", data.data);
       }
     } catch (error) {
@@ -50,6 +73,15 @@ export default function UserLayout() {
                 <span className="inline-block px-3 py-1 mt-2 text-sm font-medium rounded-full text-white bg-blue-500">
                   {role}
                 </span>
+                <button>
+                  <Link to={`/admin/updateUser/${_id}/edit`}>Edit</Link>
+                </button>
+                <button
+                  className="bg-black text-white"
+                  onClick={() => deleteUser(_id)}
+                >
+                  Delete
+                </button>
               </div>
             ))}
           </div>

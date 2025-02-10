@@ -22,6 +22,30 @@ export default function ContactLayout() {
       console.log("Something went wrong in the URL");
     }
   };
+  const deleteContact = async (_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/admin/deleteContact/${_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: authorizeToken,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setContactdata((prevdata) =>
+          prevdata.filter((user) => user._id !== _id)
+        );
+        // fetchdata();
+        console.log("this is ", data.data);
+      }
+    } catch (error) {
+      console.error("Something went wrong:", error);
+    }
+  };
 
   useEffect(() => {
     fetchdata();
@@ -46,6 +70,7 @@ export default function ContactLayout() {
                 </div>
                 <div className="text-gray-600">{email}</div>
                 <div className="text-gray-500 mt-2">{message}</div>
+                <button onClick={() => deleteContact(_id)}>Delete</button>
               </div>
             ))}
           </div>
