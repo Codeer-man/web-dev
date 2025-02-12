@@ -74,7 +74,7 @@ export default function UserLayout() {
                   {role}
                 </span>
                 <button>
-                  <Link to={`/admin/updateUser/${_id}/edit`}>Edit</Link>
+                  <Link to={`/admin/updateUser/${_id}`}>Edit</Link>
                 </button>
                 <button
                   className="bg-black text-white"

@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
     unique: true,
   },
   phone: {
-    type: String, 
+    type: String,
     required: true,
     unique: true,
   },
@@ -59,7 +59,7 @@ UserSchema.methods.generateToken = function () {
         role: this.role,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "30d" }
     );
   } catch (error) {
     console.error("JWT Generation Error:", error);

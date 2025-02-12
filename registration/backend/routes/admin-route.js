@@ -13,8 +13,8 @@ const route = express.Router();
 
 route.get("/user", authMiddleware, isAdmin, getalluser);
 route.get("/contact", authMiddleware, isAdmin, getallcontact);
-route.delete("/deleteUser/:id", DeleteUser);
-route.delete("/deleteContact/:id", DeleteContact);
-route.patch("/updateUser/:id/edit", UpdatedUser);
+route.delete("/deleteUser/:id", authMiddleware, isAdmin, DeleteUser);
+route.delete("/deleteContact/:id", authMiddleware, isAdmin, DeleteContact);
+route.patch("/updateUser/:id", authMiddleware, isAdmin, UpdatedUser);
 
 module.exports = route;

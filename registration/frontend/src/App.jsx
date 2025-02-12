@@ -17,6 +17,7 @@ import AdminLayout from "./components/admin/admin-layout";
 import UserLayout from "./pages/UserLayout";
 import ContactLayout from "./pages/ContactLayout";
 
+import EditLayout from "./pages/EditLayout";
 import Notfound from "./layout/errorHandling";
 
 const routes = createBrowserRouter(
@@ -33,6 +34,7 @@ const routes = createBrowserRouter(
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="users" element={<UserLayout />} />
         <Route path="contact" element={<ContactLayout />} />
+        <Route path="/admin/updateUser/:id" element={<EditLayout />} />
       </Route>
 
       <Route path="*" element={<Notfound />} />
