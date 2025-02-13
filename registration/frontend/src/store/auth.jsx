@@ -6,7 +6,8 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState("");
   const [Services, setGetServices] = useState({});
-  const authorizeToken = `Bearer ${token}`
+  const authorizeToken = `Bearer ${token}`;
+  const [isLoading, setIsLoading] = useState(false);
 
   const storetokenInLs = (serverToken) => {
     localStorage.setItem("token", serverToken);
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const UserAuthencatoin = async () => {
     try {
+      setIsLoading(true);
       const respomse = await fetch("http://localhost:3000/api/auth/user", {
         method: "GET",
         headers: {
@@ -37,6 +39,10 @@ export const AuthProvider = ({ children }) => {
         const data = await respomse.json();
         setUser(data.userdata);
         console.log(data.userdata);
+        setIsLoading(false);
+      } else {
+        console.error("error in the link");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("something wrong", error);
@@ -75,7 +81,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isloggedIn, storetokenInLs, LogoutUser, user, Services,authorizeToken }}
+      value={{
+        isloggedIn,
+        storetokenInLs,
+        LogoutUser,
+        user,
+        Services,
+        authorizeToken,
+        isLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

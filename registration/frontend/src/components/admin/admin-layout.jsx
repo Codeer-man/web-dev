@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTachometerAlt, FaUsers, FaEnvelope } from "react-icons/fa";
+import { useAuth } from "../../store/auth";
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user.role === "admin") {
+    return navigate("/");
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
