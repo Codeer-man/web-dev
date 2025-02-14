@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../store/auth";
+import { toast } from "react-toastify";
 
 export default function EditLayout() {
   const navigate = useNavigate();
@@ -38,9 +39,11 @@ export default function EditLayout() {
       if (response.ok) {
         const data = await response.json();
         console.log("User updated successfully:", data);
-        navigate("/admin"); // Navigate to the admin page after successful update
+        toast.success("The data has been edited");
+        navigate("/admin/users");
       } else {
         console.error("error in the link");
+        toast.error("username already exits");
       }
     } catch (error) {
       console.error("Something went wrong:", error);
@@ -57,13 +60,11 @@ export default function EditLayout() {
           onChange={handleChange}
           placeholder="Username"
         />
-        <input
-          type="text"
-          name="role"
-          value={update.role}
-          onChange={handleChange}
-          placeholder="Role"
-        />
+        <select name="role" value={update.role} onChange={handleChange}>
+          <option value="">Select role</option>
+          <option value="admin">Admin</option>
+          <option value="user">user</option>
+        </select>
         <button type="submit">Submit</button>
       </form>
     </div>

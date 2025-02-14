@@ -9,17 +9,17 @@ export default function Contactus() {
     message: "",
   });
 
-  const [userData, setuserData] = useState(true);
-
   const { user } = useAuth();
 
-  if (userData && user) {
-    setFormData({
-      username: user.username,
-      email: user.email,
-    });
-    setuserData(false);
-  }
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username,
+        email: user.email,
+        message: "",
+      });
+    }
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,13 +32,15 @@ export default function Contactus() {
         },
         body: JSON.stringify(formData),
       });
+      const data = await response.json();
       if (response.ok) {
         toast.success("Message sent successfully!");
         setFormData({ message: "" });
+      } else {
+        toast.error(data.message || "something went wrong");
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error(error);
+      console.error(data.message);
     }
   };
 
@@ -59,7 +61,7 @@ export default function Contactus() {
               placeholder="Username"
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              disabled
+              disabled={!!user}
             />
             <input
               type="email"
@@ -68,7 +70,7 @@ export default function Contactus() {
               placeholder="Email"
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              disabled
+              disabled={!!user}
             />
             <textarea
               name="message"
