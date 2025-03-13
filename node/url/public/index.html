@@ -19,7 +19,7 @@
           <label for="shortCode">Enter shortned code</label>
           <input type="text" name="shortCode" id="shortCode" required />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">Shorten</button>
       </form>
 
       <h1>Shortened URL</h1>
@@ -27,6 +27,22 @@
     </div>
 
     <script>
+      // to show db all the links
+      // const fetchlinkurl = async () => {
+      //   const response = await fetch("/links");
+      //   const links = await response.json();
+
+      //   const list = document.getElementById("shortner_url");
+      //   list.innerHTML = "";
+
+      //   for (const [shortCode, url] of Object.entries(links)) {
+      //     const li = document.createElement("li");
+      //     const trunkurl = url.length >= 20 ? `${url.slice(0, 20)}` : url;
+      //     li.innerHTML = `<a href="/${shortCode}" target="_blank"> ${window.location.origin}/${shortCode} </a> - ${trunkurl}`;
+      //     list.appendChild(li);
+      //   }
+      // };
+
       document
         .getElementById("form_shortner")
         .addEventListener("submit", async (e) => {
@@ -35,8 +51,8 @@
           const url = formdata.get("url");
           const shortCode = formdata.get("shortCode");
 
-          console.log(url, "\n", shortCode);
-
+          const list = document.getElementById("shortner_url");
+          const trunkurl = url.length >= 20 ? `${url.slice(0, 20)}` : url;
           try {
             const response = await fetch("/shorten", {
               method: "POST",
@@ -48,13 +64,20 @@
 
             const data = await response.json();
             if (response.ok) {
+              // fetchlinkurl();  //to show all the links
+
+              list.innerHTML = `<li><a href="/${shortCode}" target="_blank">${shortCode}</a></li>`;
+
               alert("Form submitted successfully");
               e.target.reset();
+            } else {
+              console.log(` ${data.message || "Something went wrong"}`);
             }
           } catch (error) {
-            throw new Error(error);
+            console.log("Error in html", error);
           }
         });
+      // fetchlinkurl();  //to show all the links
     </script>
   </body>
 </html>

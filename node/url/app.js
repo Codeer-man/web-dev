@@ -2,6 +2,8 @@ const { readFile, writeFile } = require("fs/promises");
 const { createServer } = require("http");
 const path = require("path");
 const crypto = require("crypto");
+const { link } = require("fs");
+const { log } = require("console");
 
 const DATA_FILE = path.join("data", "link.json");
 
@@ -47,6 +49,22 @@ const server = createServer(async (req, res) => {
       return serverFile(res, path.join("public", "style.css"), {
         "Content-Type": "text/css",
       });
+    } else if (req.url === "/links") {
+      const links = await loadLinks();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(links));
+      return;
+    } else {
+      const links = await loadLinks();
+      const shortCode = req.url.slice(1);
+      console.log(shortCode);
+
+      if (links[shortCode]) {
+        res.writeHead(302, { location: links[shortCode] });
+        return res.end();
+      }
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      return res.end("Shorten code not found or not created");
     }
   }
 
