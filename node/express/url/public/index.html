@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Shortener</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>URL Shortener</h1>
+
+      <form id="form_shortner">
+        <div>
+          <label for="url">Enter URL</label>
+          <input type="url" name="url" id="url" required autofocus />
+        </div>
+        <div>
+          <label for="shortCode">Enter Custom Code (Optional)</label>
+          <input type="text" name="shortCode" id="shortCode" />
+        </div>
+        <button type="submit">Shorten</button>
+      </form>
+
+      <h2>Shortened URL</h2>
+      <ul id="shortner_url"></ul>
+    </div>
+
+    <script>
+      document
+        .getElementById("form_shortner")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formdata = new FormData(e.target);
+          const url = formdata.get("url").trim();
+          const shortCode = formdata.get("shortCode").trim();
+
+          if (!url) {
+            alert("Please enter a valid URL");
+            return;
+          }
+
+          try {
+            const response = await fetch("/shorten", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ url, shortCode }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              const list = document.getElementById("shortner_url");
+              const newItem = document.createElement("li");
+              const generatedCode = shortCode || data.shorten;
+              newItem.innerHTML = `<a href="/${generatedCode}" target="_blank">${window.location.origin}/${generatedCode}</a>`;
+              list.appendChild(newItem);
+
+              alert("Short URL Created Successfully!");
+              e.target.reset();
+            } else {
+              alert(data.error || "Something went wrong");
+            }
+          } catch (error) {
+            alert("Error creating short URL. Please try again.");
+            console.error("Error:", error);
+          }
+        });
+    </script>
+  </body>
+</html>
