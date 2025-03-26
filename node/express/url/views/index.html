@@ -3,9 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Link Shortener</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    Hello world
+    <div class="container">
+      <h1>URL Shortener</h1>
+
+      <form id="form_shortner">
+        <div>
+          <label for="url">Enter URL</label>
+          <input type="url" name="url" id="url" required />
+        </div>
+        <div>
+          <label for="shortCode">Enter Shortened Code (Optional)</label>
+          <input
+            type="text"
+            name="shortCode"
+            id="shortCode"
+            placeholder="Optional"
+          />
+        </div>
+        <button type="submit">Shorten</button>
+      </form>
+
+      <h1>Shortened URLs</h1>
+      <ul id="shortner_url">
+        {{shortened_url}}
+      </ul>
+    </div>
+
+    <script>
+      document
+        .getElementById("form_shortner")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formdata = new FormData(e.target);
+          const url = formdata.get("url");
+          const shortCode = formdata.get("shortCode") || "";
+
+          if (!url) {
+            alert("URL is required");
+            return;
+          }
+
+          try {
+            const response = await fetch("/", {
+              // Updated URL
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url, shortCode }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              const list = document.getElementById("shortner_url");
+              const trunkurl =
+                url.length >= 20 ? `${url.slice(0, 20)}...` : url;
+
+              list.innerHTML += `<li><a href="/${data.shortCode}" target="_blank">${window.location.origin}/${data.shortCode}</a> → ${trunkurl}</li>`;
+
+              alert("Shortened URL created successfully!");
+              e.target.reset();
+            } else {
+              alert(`Error: ${data.error || "Something went wrong"}`);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Something went wrong. Please try again.");
+          }
+        });
+    </script>
   </body>
 </html>
