@@ -7,7 +7,9 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Add JSON middleware
 
-// router 
+app.set("view engine", "ejs");
+
+// router
 app.use(route);
 
 const PORT = 3000;

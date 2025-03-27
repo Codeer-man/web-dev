@@ -1,46 +1,66 @@
+const { readFile } = require("fs/promises");
 const crypto = require("crypto");
+const path = require("path");
+
 const { loadLinks, saveLinks } = require("../models/links");
 
-const postfolder = async (req, res) => {
+const getData = async (req, res) => {
+  try {
+    const file = await readFile(path.join("views", "index.html"));
+    const links = await loadLinks();
+    const linksHtml = Object.entries(links)
+      .map(
+        ([shortCode, url]) =>
+          `<li><a href="/${shortCode}" target="_blank">${shortCode}</a> → ${url}</li>`
+      )
+      .join("");
+
+    const content = file.toString().replaceAll("{{shortened_url}}", linksHtml);
+    return res.send(content);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const postdata = async (req, res) => {
   try {
     const { url, shortCode } = req.body;
 
     if (!url) {
-      return res.status(400).json({ error: "Please provide a valid URL" });
+      return res.status(400).send("URL is required.");
     }
 
-    const links = await loadLinks();
     const finalShortCode = shortCode || crypto.randomBytes(4).toString("hex");
 
+    const links = await loadLinks();
     if (links[finalShortCode]) {
-      return res.status(400).json({ error: "Short code already exists" });
+      return res
+        .status(400)
+        .send("Short code already exists. Please choose another.");
     }
 
     links[finalShortCode] = url;
     await saveLinks(links);
 
-    res.json({ success: true, shorten: finalShortCode });
+    res.status(201).json({ shortCode: finalShortCode, url });
   } catch (error) {
-    console.error("Error processing request:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-// Redirect to the original URL if shortCode exists
-const getData = async (req, res) => {
-  try {
-    const links = await loadLinks();
-    const { shortCode } = req.params;
-
-    if (links[shortCode]) {
-      return res.redirect(302, links[shortCode]);
-    }
-
-    res.status(404).send("Shortened code not found");
-  } catch (error) {
-    console.error("Error fetching link:", error.message);
+    console.error(error);
     res.status(500).send("Internal Server Error");
   }
 };
 
-module.exports = { postfolder, getData };
+const shortCode = async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+    const links = await loadLinks();
+
+    if (!links[shortCode]) return res.status(404).send("404 error occurred.");
+
+    return res.redirect(links[shortCode]);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal server error");
+  }
+};
+module.exports = { getData, postdata, shortCode };

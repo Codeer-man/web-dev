@@ -1,16 +1,16 @@
 const path = require("path");
-const fs = require("fs/promises");
+const { readFile, writeFile } = require("fs/promises");
 
 const DATA_FILE = path.join("data", "link.json");
 
 // Load stored links from JSON
 const loadLinks = async () => {
   try {
-    const data = await fs.readFile(DATA_FILE, "utf-8");
+    const data = await readFile(DATA_FILE, "utf-8");
     return data.trim() ? JSON.parse(data) : {};
   } catch (error) {
     if (error.code === "ENOENT") {
-      await fs.writeFile(DATA_FILE, JSON.stringify({}));
+      await writeFile(DATA_FILE, JSON.stringify({}), "utf-8");
       return {};
     }
     throw error;
@@ -19,7 +19,7 @@ const loadLinks = async () => {
 
 // Save links to JSON file
 const saveLinks = async (links) => {
-  await fs.writeFile(DATA_FILE, JSON.stringify(links, null, 2));
+  await writeFile(DATA_FILE, JSON.stringify(links));
 };
 
 module.exports = { loadLinks, saveLinks };
