@@ -1,0 +1,13 @@
+to install prisma
+npm install prisma --save-dev
+npm install prisma typescript tsx @types/node --save-dev
+
+setup prisma orm
+npx prisma init
+npx prisma init --datasource-provider mysql --output ../generated/prisma
+
+map your data model to database schema
+npx prisma migrate dev --name init
+
+to create prisma/client if not present and to update the prisma client to the latest version
+npx prisma generate
