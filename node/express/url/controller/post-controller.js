@@ -1,12 +1,11 @@
 const { readFile } = require("fs/promises");
 const crypto = require("crypto");
 const path = require("path");
-
 const {
   loadLinks,
   saveLinks,
   getLinksByShortCode,
-} = require("../models/links");
+} = require("../services/services");
 
 const getData = async (req, res) => {
   try {
@@ -20,8 +19,8 @@ const getData = async (req, res) => {
     const linksHtml = linksArray
       .map(
         (link) =>
-          `<li><a href="/${link.shortCode}" target="_blank">${
-            link.shortCode
+          `<li><a href="/${link.shortcode}" target="_blank">${
+            link.shortcode
           }</a> → ${link.url.slice(0, 25)}</li>`
       )
       .join("");
@@ -46,15 +45,18 @@ const postdata = async (req, res) => {
     const finalShortCode = shortCode || crypto.randomBytes(4).toString("hex");
 
     const links = await loadLinks();
-    if (links[finalShortCode]) {
+    const existingLink = links.find(
+      (link) => link.shortcode === finalShortCode
+    );
+
+    if (existingLink) {
       return res
         .status(400)
         .send("Short code already exists. Please choose another.");
     }
 
-    // links[finalShortCode] = url;
-    // await saveLinks(links);
-    await saveLinks({ url, shortCode });
+    // Insert the new short link into the database
+    await saveLinks(url, finalShortCode);
 
     res.status(201).json({ shortCode: finalShortCode, url });
   } catch (error) {
@@ -66,12 +68,12 @@ const postdata = async (req, res) => {
 const shortCode = async (req, res) => {
   try {
     const { shortCode } = req.params;
-    // const links = await loadLinks();
+
+    // Get the link by short code from the database
     const link = await getLinksByShortCode(shortCode);
     console.log("Retrieved link:", link);
 
-    // if (!links[shortCode]) return res.status(404).send("404 error occurred.");
-    if (!link) return res.status(404).send("Links not found");
+    if (!link) return res.status(404).send("Link not found");
 
     return res.redirect(link.url);
   } catch (error) {
@@ -79,4 +81,5 @@ const shortCode = async (req, res) => {
     return res.status(500).send("Internal server error");
   }
 };
+
 module.exports = { getData, postdata, shortCode };
