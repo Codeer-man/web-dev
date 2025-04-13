@@ -7,9 +7,18 @@ const app = express();
 dotenv.config();
 
 const staticpath = path.join(import.meta.dirname, "public");
+const pagenotFound = path.join(import.meta.dirname, "views");
 // const staticPath = path.join(__dirname, "public");
-app.use("/public", express.static(staticpath));
-app.use(express.json());
+app.use("/", express.static(staticpath));
+app.use((req, res) => {
+  // res.status(404).send("Page not found");
+  res.sendFile(express.static(pagenotFound));
+});
+
+app.get("/contact", (req, res) => {
+  console.log(req.query);
+  res.redirect("/");
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

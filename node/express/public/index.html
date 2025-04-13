@@ -4,11 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div>
-      <h1>Welcome to the world of web development</h1>
-    </div>
+    <form action="/contact">
+      <label>Email</label>
+      <input type="email" placeholder="Email" name="email" />
+      <label>Password</label>
+      <input type="password" placeholder="password" name="password" />
+      <button>Submit</button>
+    </form>
+
+    <!-- <script>
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formdata = new FormData(e.target);
+        const email = formdata.get("email");
+        const password = formdata.get("password");
+      });
+    </script> -->
   </body>
 </html>

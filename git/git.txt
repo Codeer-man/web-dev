@@ -1,0 +1,6 @@
+to see the identity of the github user
+git config --get user.name to see the github user name
+git config --get user.email to see the github user email
+
+store your global git configuration
+cat ~/.gitconfig
