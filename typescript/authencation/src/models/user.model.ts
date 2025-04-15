@@ -13,7 +13,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: userRole;
-  otp?: string;
+  otp?: number;
   refreshToken?: string;
   emailVerified: boolean;
   createdAt: Date;
@@ -49,7 +49,7 @@ const UserSchema = new Schema<IUser>(
       default: null,
     },
     otp: {
-      type: String,
+      type: Number,
       default: null,
     },
     emailVerified: {

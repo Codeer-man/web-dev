@@ -69,7 +69,7 @@ const UserSchema = new mongoose_1.Schema({
         default: null,
     },
     otp: {
-        type: String,
+        type: Number,
         default: null,
     },
     emailVerified: {

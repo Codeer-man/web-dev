@@ -8,11 +8,16 @@ interface TokenPayload {
 export const generateToken = (user: TokenPayload) => {
   const accessTokenSecret = process.env.JWT_ACCESS_TOKEN;
   const refreshTokenSecret = process.env.JWT_REFRESH_KEY;
+  const forgetPasswordToken = process.env.JWT_FORGET_KEY;
 
   if (!accessTokenSecret || !refreshTokenSecret) {
     throw new Error(
       "JWT secrets are not configured. Please check your environment variables."
     );
+  }
+
+  if (!forgetPasswordToken) {
+    throw new Error("Forgot psw secret key not found");
   }
 
   const accessToken = jwt.sign(
@@ -25,5 +30,13 @@ export const generateToken = (user: TokenPayload) => {
     expiresIn: "7d",
   });
 
-  return { accessToken, refreshToken };
+  const forgetPassword = jwt.sign(
+    {
+      email: user.email,
+    },
+    forgetPasswordToken,
+    { expiresIn: "2h" }
+  );
+
+  return { accessToken, refreshToken, forgetPassword };
 };
