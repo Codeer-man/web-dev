@@ -9,32 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgetPassword = exports.verifyEmail = void 0;
+exports.forgetPassword = void 0;
 const auth_services_1 = require("../services/auth.services");
 const errorHandler_1 = require("../utils/errorHandler");
 const mail_services_1 = require("../services/mail.services");
-const verifyEmail = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { otp, userId } = req.body;
-        const user = yield (0, auth_services_1.findUserById)(userId);
-        if (!user) {
-            throw new errorHandler_1.ErrorHandler("User not found", 404, false);
-        }
-        if (user.otp !== otp) {
-            throw new errorHandler_1.ErrorHandler("OTP does not match", 400, false);
-        }
-        yield user.updateOne({ emailVerified: true });
-        res.status(200).json({
-            success: true,
-            message: "Email verified successfully",
-            data: user,
-        });
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.verifyEmail = verifyEmail;
 const forgetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, email } = req.body;

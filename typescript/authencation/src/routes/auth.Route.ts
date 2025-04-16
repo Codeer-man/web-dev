@@ -1,28 +1,31 @@
 import express from "express";
 import { validation } from "../middleware/validate.middleware";
 import { loginSchema, registerSchema } from "../validation/authSchema";
-import { getUserById } from "../controllers/auth.controller";
+import { getUserById, logout } from "../controllers/auth.controller";
 import { authmiddleware } from "../middleware/auth.middleware";
-import { forgetPassword, verifyEmail } from "../controllers/password.controller";
+import { forgetPassword } from "../controllers/password.controller";
+import { verifyEmail } from "../controllers/verify.controller";
 
 const { authRegister, authLogin } = require("../controllers/auth.controller");
 
 const router = express.Router();
 
-// get user info route 
-router.get("/getUser",authmiddleware,getUserById)
+// get user info route
+router.get("/getUser", authmiddleware, getUserById);
 
 // Register route
 router.post("/register", validation(registerSchema), authRegister);
 
 // login route
 router.post("/login", validation(loginSchema), authLogin);
-// router.post("/logout", authLogout);
 
-// email verify route 
-router.post("/verify-email",verifyEmail)
+// log out
+router.post("/logout", authmiddleware, logout);
 
-// forget password 
-router.post("/forgetPassword", forgetPassword)
+// email verify route
+router.post("/verify-email/:id", authmiddleware, verifyEmail);
+
+// forget password
+router.post("/forgetPassword", authmiddleware, forgetPassword);
 
 export default router;

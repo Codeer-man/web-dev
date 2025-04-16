@@ -5,7 +5,11 @@ interface TokenPayload {
   email: string;
 }
 
-export const generateToken = (user: TokenPayload) => {
+interface SessionPayload {
+  id: string;
+}
+
+export const generateToken = (user: TokenPayload, session: SessionPayload) => {
   const accessTokenSecret = process.env.JWT_ACCESS_TOKEN;
   const refreshTokenSecret = process.env.JWT_REFRESH_KEY;
   const forgetPasswordToken = process.env.JWT_FORGET_KEY;
@@ -23,15 +27,18 @@ export const generateToken = (user: TokenPayload) => {
   const accessToken = jwt.sign(
     { email: user.email, id: user.id },
     accessTokenSecret,
-    { expiresIn: "1h" }
+    { expiresIn: "15m" }
   );
 
-  const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret, {
-    expiresIn: "7d",
-  });
+  const refreshToken = jwt.sign(
+    { id: user.id, sessionId: session.id },
+    refreshTokenSecret,
+    { expiresIn: "7d" }
+  );
 
   const forgetPassword = jwt.sign(
     {
+      id: user.id,
       email: user.email,
     },
     forgetPasswordToken,

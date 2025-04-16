@@ -1,19 +1,28 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
+import express, { urlencoded } from "express";
 import connectDB from "./utils/db";
-import { authRoutes } from "./routes/index";
+import { authRoutes, SessionRoutes } from "./routes/index";
 import { errorHandler } from "./middleware/error.middleware";
 import cookieParse from "cookie-parser";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
-
-connectDB();
+app.use(urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "localhost://5173",
+    credentials: true,
+  })
+);
 
 app.use(cookieParse());
 
+connectDB();
+
 app.use("/api/auth", authRoutes);
+app.use("/api/session", SessionRoutes);
 
 app.use(errorHandler);
 

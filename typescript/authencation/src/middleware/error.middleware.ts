@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 
 interface AppError extends Error {
   statusCode: number;
@@ -6,7 +6,7 @@ interface AppError extends Error {
   message: string;
 }
 
-export const errorHandler = (
+export const errorHandler:ErrorRequestHandler = (
   err: AppError,
   req: Request,
   res: Response,

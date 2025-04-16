@@ -55,6 +55,7 @@ export const authmiddleware = async (
     (req as any).id = user._id.toString();
     (req as any).token = token;
 
+
     next();
   } catch (error) {
     next(error);

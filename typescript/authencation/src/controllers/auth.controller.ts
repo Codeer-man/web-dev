@@ -5,7 +5,7 @@ import { generateToken } from "../utils/authHandlers";
 import { ErrorHandler } from "../utils/errorHandler";
 import { sendverificationMail } from "../services/mail.services";
 import jwt from "jsonwebtoken";
-
+import Session from "../models/session";
 
 export const getUserById = async (
   req: Request,
@@ -14,7 +14,12 @@ export const getUserById = async (
 ) => {
   try {
     const User = (req as any).user;
-  
+
+    if (!User) {
+      throw new ErrorHandler("User not found in the controller ", 401, false);
+    }
+    console.log(User);
+
     res.status(200).json({ sucess: false, message: "User found", data: User });
   } catch (error) {
     next(error);
@@ -39,21 +44,28 @@ export const authRegister = async (
       throw new ErrorHandler("Username or email already exists", 400, false);
     }
 
- 
     const newUser = new User({ username, email, password });
     await newUser.save();
 
-       // send verification mail
-    const verificationOtp = await sendverificationMail(newUser);
+    try {
+      // Send verification email
+      const verificationOtp = await sendverificationMail(newUser);
+      newUser.otp = verificationOtp;
+      await newUser.save();
 
-    newUser.otp = verificationOtp;
-    await newUser.save();
-
-    res.status(201).json({
-      sucess: true,
-      message: "New user has been created",
-      data: newUser,
-    });
+      res.status(201).json({
+        success: true,
+        message: "Registration successful. Check your email for verification.",
+        data: {
+          id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+        },
+      });
+    } catch (emailError) {
+      await User.deleteOne({ _id: newUser._id });
+      throw new ErrorHandler("Failed to send verification email", 500, false);
+    }
   } catch (error) {
     next(error);
   }
@@ -66,46 +78,39 @@ export const authLogin = async (
 ): Promise<void> => {
   try {
     const { username, email, password } = req.body;
-
     const user = await compareEmailAndUsername(username, email);
-
-    if (!user) {
+    if (!user)
       throw new ErrorHandler("Username or email not found", 401, false);
-    }
 
     const correctPassword = await user.comparePassword(password);
+    if (!correctPassword)
+      throw new ErrorHandler("Password does not match", 401, false);
 
-    if (!correctPassword) {
-      throw new ErrorHandler("Password doesnot match", 500, false);
-    }
-
-    const { accessToken, refreshToken } = generateToken({
-      id: user._id.toString(),
-      email: user.email,
+    // Create session
+    const session = await Session.create({
+      userId: user._id,
+      userAgent: req.headers["user-agent"],
     });
+
+    const { accessToken, refreshToken } = generateToken(
+      { id: user._id.toString(), email: user.email },
+      { id: session.id.toString() }
+    );
 
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
-
-    res.status(201).json({
-      sucess: true,
-      message: "User logged In",
+    res.status(200).json({
+      success: true,
+      message: "User logged in",
       data: user,
       accessToken: accessToken,
-      refreshToken: refreshToken,
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -130,6 +135,7 @@ export const refreshToken = async (
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY) as {
       id: string;
+      sessionId: string;
     };
 
     if (!decoded) {
@@ -146,10 +152,13 @@ export const refreshToken = async (
       throw new ErrorHandler("Token not matched", 401, false);
     }
 
-    const { accessToken } = generateToken({
-      id: findUser._id.toString(),
-      email: findUser.email,
-    });
+    const { accessToken } = generateToken(
+      {
+        id: findUser._id.toString(),
+        email: findUser.email,
+      },
+      { id: sessionStorage.userId.toString() }
+    );
 
     const options = {
       httponly: true,
@@ -163,6 +172,49 @@ export const refreshToken = async (
       success: true,
       message: "Access token refreshed successfully",
       accessToken: accessToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      throw new ErrorHandler("Refresh token not found", 400, false);
+    }
+
+    // Decode token to get sessionId
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY!) as {
+      id: string;
+      sessionId: string;
+    };
+
+    // Delete the session from the database
+    await Session.findByIdAndDelete(decoded.sessionId);
+
+    // Clear cookies
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
     next(error);

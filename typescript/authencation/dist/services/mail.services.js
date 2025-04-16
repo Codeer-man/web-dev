@@ -15,37 +15,67 @@ const mailHandler_1 = require("../utils/mailHandler");
 const authHandlers_1 = require("../utils/authHandlers");
 function sendverificationMail(newUser) {
     return __awaiter(this, void 0, void 0, function* () {
-        const verificationLink = `http://localhost:5173/verify-otp?userid=${newUser._id}`;
+        if (!newUser.email) {
+            throw new Error("Recipient email is required");
+        }
         const verificationOtp = Math.floor(100000 + Math.random() * 900000);
-        // verification email
-        const MailOptions = {
+        const verificationLink = `${process.env.FRONTEND_URL}/verify-otp?userid=${newUser._id}`;
+        const mailOptions = {
             from: `"Google baba" <${process.env.SMTP_USER}>`,
+            to: newUser.email, // Added recipient
             subject: "Welcome to the code",
             text: `Your email ${newUser.email} has been created. Your OTP is ${verificationOtp}`,
-            html: `<p>Your OTP is <strong>${verificationOtp}</strong></p>
-           <p>Verify by clicking this <a href="${verificationLink}">link</a></p>`,
+            html: `
+      <div>
+        <p>Hello ${newUser.username || "User"},</p>
+        <p>Your OTP is <strong>${verificationOtp}</strong></p>
+        <p>Verify by clicking this <a href="${verificationLink}">link</a></p>
+        <p>OTP will expire in 15 minutes.</p>
+      </div>
+    `,
         };
-        yield mailHandler_1.transporter.sendMail(MailOptions);
-        return verificationOtp;
+        try {
+            yield mailHandler_1.transporter.sendMail(mailOptions);
+            return verificationOtp;
+        }
+        catch (error) {
+            console.error("Failed to send verification email:", error);
+            throw new Error("Failed to send verification email");
+        }
     });
 }
 function sendForgetPasswordLink(user) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!user.email) {
+            throw new Error("Recipient email is required");
+        }
         const { forgetPassword } = (0, authHandlers_1.generateToken)({
             id: user._id.toString(),
             email: user.email,
         });
-        const verificationLink = `http://localhost:5173/reset-password?token=${forgetPassword}`;
-        // verification email
-        const MailOptions = {
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${forgetPassword}`;
+        const mailOptions = {
             from: `"Google baba" <${process.env.SMTP_USER}>`,
             to: user.email,
-            subject: "Reset password",
-            // text: `To reset the password of ${user.email} the token is  ${forgetPassword}`,
-            html: `<p>To reset the password of ${user.email}</strong></p>
-           <p>Click the link <a href="${verificationLink}">link</a></p>`,
+            subject: "Password Reset Request",
+            html: `
+      <div>
+        <p>Hello ${user.username || "User"},</p>
+        <p>We received a request to reset your password.</p>
+        <p>Click the link below to proceed:</p>
+        <p><a href="${resetLink}">Reset Password</a></p>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      </div>
+    `,
         };
-        yield mailHandler_1.transporter.sendMail(MailOptions);
-        return forgetPassword;
+        try {
+            yield mailHandler_1.transporter.sendMail(mailOptions);
+            return forgetPassword;
+        }
+        catch (error) {
+            console.error("Failed to send password reset email:", error);
+            throw new Error("Failed to send password reset email");
+        }
     });
 }

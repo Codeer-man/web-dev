@@ -12,16 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshToken = exports.authLogin = exports.authRegister = exports.getUserById = void 0;
+exports.logout = exports.refreshToken = exports.authLogin = exports.authRegister = exports.getUserById = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
 const auth_services_1 = require("../services/auth.services");
 const authHandlers_1 = require("../utils/authHandlers");
 const errorHandler_1 = require("../utils/errorHandler");
 const mail_services_1 = require("../services/mail.services");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const session_1 = __importDefault(require("../models/session"));
 const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const User = req.user;
+        if (!User) {
+            throw new errorHandler_1.ErrorHandler("User not found in the controller ", 401, false);
+        }
+        console.log(User);
         res.status(200).json({ sucess: false, message: "User found", data: User });
     }
     catch (error) {
@@ -41,15 +46,25 @@ const authRegister = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         }
         const newUser = new user_model_1.default({ username, email, password });
         yield newUser.save();
-        // send verification mail
-        const verificationOtp = yield (0, mail_services_1.sendverificationMail)(newUser);
-        newUser.otp = verificationOtp;
-        yield newUser.save();
-        res.status(201).json({
-            sucess: true,
-            message: "New user has been created",
-            data: newUser,
-        });
+        try {
+            // Send verification email
+            const verificationOtp = yield (0, mail_services_1.sendverificationMail)(newUser);
+            newUser.otp = verificationOtp;
+            yield newUser.save();
+            res.status(201).json({
+                success: true,
+                message: "Registration successful. Check your email for verification.",
+                data: {
+                    id: newUser._id,
+                    username: newUser.username,
+                    email: newUser.email,
+                },
+            });
+        }
+        catch (emailError) {
+            yield user_model_1.default.deleteOne({ _id: newUser._id });
+            throw new errorHandler_1.ErrorHandler("Failed to send verification email", 500, false);
+        }
     }
     catch (error) {
         next(error);
@@ -60,37 +75,30 @@ const authLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     try {
         const { username, email, password } = req.body;
         const user = yield (0, auth_services_1.compareEmailAndUsername)(username, email);
-        if (!user) {
+        if (!user)
             throw new errorHandler_1.ErrorHandler("Username or email not found", 401, false);
-        }
         const correctPassword = yield user.comparePassword(password);
-        if (!correctPassword) {
-            throw new errorHandler_1.ErrorHandler("Password doesnot match", 500, false);
-        }
-        const { accessToken, refreshToken } = (0, authHandlers_1.generateToken)({
-            id: user._id.toString(),
-            email: user.email,
+        if (!correctPassword)
+            throw new errorHandler_1.ErrorHandler("Password does not match", 401, false);
+        // Create session
+        const session = yield session_1.default.create({
+            userId: user._id,
+            userAgent: req.headers["user-agent"],
         });
+        const { accessToken, refreshToken } = (0, authHandlers_1.generateToken)({ id: user._id.toString(), email: user.email }, { id: session.id.toString() });
         user.refreshToken = refreshToken;
         yield user.save();
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-        });
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: true,
-        });
-        res.status(201).json({
-            sucess: true,
-            message: "User logged In",
+        res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+        res.status(200).json({
+            success: true,
+            message: "User logged in",
             data: user,
             accessToken: accessToken,
-            refreshToken: refreshToken,
         });
     }
-    catch (error) {
-        next(error);
+    catch (err) {
+        next(err);
     }
 });
 exports.authLogin = authLogin;
@@ -118,7 +126,7 @@ const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const { accessToken } = (0, authHandlers_1.generateToken)({
             id: findUser._id.toString(),
             email: findUser.email,
-        });
+        }, { id: sessionStorage.userId.toString() });
         const options = {
             httponly: true,
             secure: true,
@@ -136,3 +144,34 @@ const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.refreshToken = refreshToken;
+const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            throw new errorHandler_1.ErrorHandler("Refresh token not found", 400, false);
+        }
+        // Decode token to get sessionId
+        const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+        // Delete the session from the database
+        yield session_1.default.findByIdAndDelete(decoded.sessionId);
+        // Clear cookies
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+        });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+        });
+        res.status(200).json({
+            success: true,
+            message: "Logged out successfully",
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.logout = logout;
