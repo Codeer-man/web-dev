@@ -16,6 +16,10 @@ import Product from "./pages/Admin/Product";
 import NotFound from "./components/NotFound";
 import Cart from "./pages/cart";
 import Auth from "./store/auth";
+import StepCount from "./Reducer/stepCount";
+import Todo from "./Reducer/Todo";
+import CounterHistory from "./Reducer/CounterHistory";
+import Taskmanage from "./Reducer/taskmanage";
 
 function App() {
   return (
@@ -39,8 +43,8 @@ function App() {
           <Route path="order" element={<AdminOrder />} />
           <Route path="productlist" element={<Product />} />
         </Route>
-        <Route path="/auth" element={<Auth/>}/>
-
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/reducer" element={<Taskmanage />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
       <Footer />
