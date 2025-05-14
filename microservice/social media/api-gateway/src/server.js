@@ -11,6 +11,7 @@ const { RedisStore } = require("rate-limit-redis");
 //! IP based rate Limiter
 const { rateLimit } = require("express-rate-limit");
 const errorHandler = require("./middleware/errorHanlder");
+const validateUser = require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -60,10 +61,8 @@ const proxyOption = {
     return req.originalUrl.replace(/^\/v1/, "/api");
   },
   proxyErrorHandler: (err, res, next) => {
-    logger.error(`Proxy error: ${err.message}`);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: err.message });
+    logger.error(`Proxy error: ${err}`);
+    res.status(500).json({ message: "Internal server error", error: err });
   },
 };
 
@@ -74,6 +73,7 @@ app.use(
     ...proxyOption,
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
       proxyReqOpts.headers["Content-Type"] = "application/json";
+
       return proxyReqOpts;
     },
     userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
@@ -81,6 +81,19 @@ app.use(
         `response received from Identity service ${proxyRes.statusCode}`
       );
       return proxyResData;
+    },
+  })
+);
+// setting up proxy for out indentity services
+app.use(
+  "/v1/post",
+  validateUser,
+  proxy(process.env.Post_Service_URL, {
+    ...proxyOption,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers["Content-Type"] = "application/json";
+      proxyReqOpts.headers["x-user-id"] = srcReq.user.userId;
+      return proxyReqOpts;
     },
   })
 );
@@ -92,6 +105,7 @@ app.listen(PORT, () => {
   logger.info(
     `Identity server running in port ${process.env.Identity_Service_URL}`
   );
+  logger.info(`Post server running in port ${process.env.Post_Service_URL}`);
   logger.info(`Redis in  ${process.env.Redis_URL}`);
 
   console.log(`server Running on port ${PORT}`);
