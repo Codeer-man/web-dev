@@ -12,9 +12,10 @@ const createPost = async (req, res) => {
     }
 
     const { content, mediaIds } = req.body;
+    console.log(req.user);
 
     const newlyCreatedPost = new Post({
-      user: req.user.userId,
+      user: req.user,
       content,
       mediaIds: mediaIds || [],
     });
@@ -37,6 +38,33 @@ const createPost = async (req, res) => {
 
 const getAllpost = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const totalPost = await Post.countDocuments();
+    const startIndex = (page - 1) * limit;
+
+    const cachekey = `posts:${page}:limit:${limit}`;
+    const cachedPost = await req.redisClient.get(cachekey);
+    if (cachedPost) {
+      res.status(200).json(JSON.parse(cachedPost));
+    }
+
+    const post = await Post.find({})
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit);
+
+    const result = {
+      currentPage: page,
+      totalPost,
+      totalPage: Math.ceil(totalPost / limit),
+      post,
+    };
+
+    // save to redis or cache
+    await req.redisClient.setex(cachekey, 300, JSON.stringify(result));
+
+    res.json(result);
   } catch (error) {
     logger.error("Error fetching post", error);
     res.status(500).json({

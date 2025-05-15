@@ -80,7 +80,7 @@ const userLogin = async (req, res, next) => {
         message: "Invalid password",
       });
     }
-
+    await User.deleteOne({ _id: user.id });
     const { accessToken, refreshToken } = await generateToken(user);
 
     logger.info("user logged in");

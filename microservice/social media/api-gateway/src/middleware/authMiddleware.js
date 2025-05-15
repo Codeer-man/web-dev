@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
 
 const validateUser = (req, res, next) => {
-  const authheader = req.headers["authorization"];
-  const token = authheader && authheader.split(" ")[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     logger.warn("Token not provided");
@@ -13,7 +13,7 @@ const validateUser = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       logger.warn("Invalid token");
       return res.status(401).json({
@@ -21,6 +21,7 @@ const validateUser = (req, res, next) => {
         message: "Invalid token",
       });
     }
+    console.log(user);
 
     req.user = user;
     next();

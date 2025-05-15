@@ -7,6 +7,9 @@ const RefreshTokenSchema = new mongoose.Schema(
       require: true,
       unique: true,
     },
+    access: {
+      type: String,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",

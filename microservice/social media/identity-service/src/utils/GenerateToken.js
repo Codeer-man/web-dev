@@ -8,18 +8,9 @@ const generateToken = async (user) => {
       id: user._id,
       username: user.username,
     },
-    process.env.JWT_ACCESS_TOKEN,
+    process.env.JWT_SECRET,
     { expiresIn: "60m" }
   );
-
-  //   const refreshToken = jwt.sign(
-  //     {
-  //       id: user._id,
-  //     },
-  //     process.env.JWT_REFRESH_TOKEN,
-  //     { expiresIn: "7d" }
-  //   );
-
   const refreshToken = crypto.randomBytes(40).toString("hex");
   const expireAt = new Date();
   expireAt.setDate(expireAt.getDate() + 7); //7 days

@@ -84,7 +84,7 @@ app.use(
     },
   })
 );
-// setting up proxy for out indentity services
+// setting up proxy for out post services
 app.use(
   "/v1/post",
   validateUser,
@@ -92,8 +92,15 @@ app.use(
     ...proxyOption,
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
       proxyReqOpts.headers["Content-Type"] = "application/json";
-      proxyReqOpts.headers["x-user-id"] = srcReq.user.userId;
+      proxyReqOpts.headers["x-user-id"] = srcReq.user.id;
+
       return proxyReqOpts;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      logger.info(
+        `response received from Identity service ${proxyRes.statusCode}`
+      );
+      return proxyResData;
     },
   })
 );
