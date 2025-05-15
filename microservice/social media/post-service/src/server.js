@@ -45,16 +45,16 @@ const sensetiveEndpoints = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    logger.warn(`Sensetive endpoint limit evceed in ${req.ip}`);
+    logger.warn(`Sensetive endpoint limit exceed in ${req.url}`);
     res.status(429).json({
-      message: `Sensetive endpoint limit evceed in ${req.ip}`,
+      message: `Sensetive endpoint limit exceed in ${req.url}`,
     });
   },
   store: new RedisStore({
     sendCommand: (...args) => redisClient.call(...args),
   }),
 });
-app.use(sensetiveEndpoints);
+// app.use(sensetiveEndpoints);
 
 app.use(
   "/api/post",
