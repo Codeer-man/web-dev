@@ -22,7 +22,6 @@ const createPost = async (req, res) => {
     }
 
     const { content, mediaIds } = req.body;
-    console.log(req.user);
 
     const newlyCreatedPost = new Post({
       user: req.user,

@@ -54,7 +54,7 @@ const sensetiveEndpoints = rateLimit({
     sendCommand: (...args) => redisClient.call(...args),
   }),
 });
-// app.use(sensetiveEndpoints);
+app.use(sensetiveEndpoints);
 
 app.use(
   "/api/post",

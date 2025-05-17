@@ -100,6 +100,8 @@ app.use(
       logger.info(
         `response received from Identity service ${proxyRes.statusCode}`
       );
+      console.log(proxyResData);
+
       return proxyResData;
     },
   })
