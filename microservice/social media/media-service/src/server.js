@@ -10,6 +10,8 @@ const { Redis } = require("ioredis");
 const logger = require("./utils/logger");
 const { RedisStore } = require("rate-limit-redis");
 const Post = require("../../post-service/src/models/post");
+const { connectToRabbitMq, consumeEvent } = require("./utils/rabbitmq");
+const handleMediaDelete = require("./event-handler/mediaEvemtHanlder");
 
 const app = express();
 const PORT = process.env.PORT || 3004;
@@ -30,7 +32,6 @@ const redisClient = new Redis(process.env.Redis_URL);
 
 app.use(helmet());
 app.use(express.json());
-// app.use(corsOptions());
 app.use(cors());
 
 app.use((req, res, next) => {
@@ -58,14 +59,35 @@ const sensetiveEndpoints = rateLimit({
 
 app.use(sensetiveEndpoints);
 
-app.use("/api/media", mediaRoute);
+app.use(
+  "/api/media",
+  (req, res, next) => {
+    req.redisClient = redisClient;
+    next();
+  },
+  mediaRoute
+);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  logger.info(`Server is running on the port ${PORT}`);
-  console.log(`Server is running on the port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectToRabbitMq();
+
+    // consume all the events
+    await consumeEvent("post.deleted", handleMediaDelete);
+
+    app.listen(PORT, () => {
+      logger.info(`Server is running on the port ${PORT}`);
+      console.log(`Server is running on the port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error("Error while starting server", error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandler rejection in ", promise, "reason:", reason);

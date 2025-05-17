@@ -10,6 +10,7 @@ const Redis = require("ioredis");
 const corsOptions = require("./config/corsOptoins");
 const { rateLimit } = require("express-rate-limit");
 const { RedisStore } = require("rate-limit-redis");
+const { connectToRabbitMq } = require("./utils/rabbitmq");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -67,10 +68,20 @@ app.use(
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  logger.info(`Identity server running in port ${PORT}`);
-  console.log(`server Running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectToRabbitMq();
+    app.listen(PORT, () => {
+      logger.info(`Identity server running in port ${PORT}`);
+      console.log(`server Running on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error("Error while starting server", error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandler rejection in ", promise, "reason:", reason);

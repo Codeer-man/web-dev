@@ -6,11 +6,10 @@ const errorHandler = (err, req, res, next) => {
   err.statusCode = err.status || 500;
   err.success = err.success || false;
   err.message = err.message;
-  console.log(err.message);
 
   res.status(err.statusCode).json({
     success: err.success,
-    message: err.message,
+    message: err.message || "Invalid serve rerror",
   });
 };
 

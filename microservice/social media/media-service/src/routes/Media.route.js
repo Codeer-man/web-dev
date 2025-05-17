@@ -3,7 +3,7 @@ const multer = require("multer");
 const authenticateRequest = require("../middleware/auth.middleware");
 const logger = require("../utils/logger");
 
-const uploadMedia = require("../controllers/media.controller");
+const { uploadMedia, getAllMedia } = require("../controllers/media.controller");
 
 const router = express.Router();
 const upload = multer({
@@ -26,9 +26,9 @@ router.post(
           stack: err.stack,
         });
       } else if (err) {
-        logger.warn("unknown error while uploading", err);
+        logger.error("Unknown error occured while uploading:", err);
         return res.status(500).json({
-          message: "unknown error while uploading",
+          message: "Unknown error occured while uploading:",
           error: err.message,
           stack: err.stack,
         });
@@ -43,5 +43,7 @@ router.post(
   },
   uploadMedia
 );
+
+router.get("/get", authenticateRequest, getAllMedia);
 
 module.exports = router;
