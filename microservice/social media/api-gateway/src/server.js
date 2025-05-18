@@ -97,9 +97,7 @@ app.use(
       return proxyReqOpts;
     },
     userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-      logger.info(
-        `response received from Identity service ${proxyRes.statusCode}`
-      );
+      logger.info(`response received from post service ${proxyRes.statusCode}`);
       console.log(proxyResData);
 
       return proxyResData;
@@ -132,6 +130,29 @@ app.use(
   })
 );
 
+// setting up proxy for out search services
+app.use(
+  "/v1/post",
+  validateUser,
+  proxy(process.env.Search_Service_URL, {
+    ...proxyOption,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers["Content-Type"] = "application/json";
+      proxyReqOpts.headers["x-user-id"] = srcReq.user.id;
+
+      return proxyReqOpts;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      logger.info(
+        `response received from search service ${proxyRes.statusCode}`
+      );
+      console.log(proxyResData);
+
+      return proxyResData;
+    },
+  })
+);
+
 app.use(errorHandler);
 
 app.listen(PORT, () => {
@@ -141,6 +162,9 @@ app.listen(PORT, () => {
   );
   logger.info(`Post server running in port ${process.env.Post_Service_URL}`);
   logger.info(`mdeia server running in port ${process.env.Media_Service_URL}`);
+  logger.info(
+    `search server running in port ${process.env.Search_Service_URL}`
+  );
   logger.info(`Redis in  ${process.env.Redis_URL}`);
 
   console.log(`server Running on port ${PORT}`);

@@ -1,4 +1,3 @@
-combined.log
-error.log
+*.log
 .env 
 .node_modules
