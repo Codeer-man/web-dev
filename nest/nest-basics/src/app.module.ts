@@ -8,6 +8,8 @@ import { PostModule } from './post/post.module';
 import * as joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post/entities/post.entities';
+import { AuthModule } from './auth/auth.module';
+import { User } from './auth/entities/user.entities';
 
 @Module({
   imports: [
@@ -27,9 +29,10 @@ import { Post } from './post/entities/post.entities';
       username: 'postgres',
       password: 'admin',
       database: 'nest/Js_learning',
-      entities: [Post], // arrya of entitites (model in mongoose) to register
+      entities: [Post, User], // arrya of entitites (model in mongoose) to register
       synchronize: true, // only in development
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
