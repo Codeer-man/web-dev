@@ -121,6 +121,20 @@ export class AuthService {
     }
   }
 
+  async getUserById(id: number) {
+    const findUser = await this.usersRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!findUser) {
+      throw new UnauthorizedException(`User with id ${id} not found`);
+    }
+
+    const { password, ...result } = findUser;
+
+    return result;
+  }
+
   private generateToken(user: User) {
     return {
       accessToken: this.generateAccessToken(user),
@@ -160,5 +174,4 @@ export class AuthService {
     return bcrypt.hash(password, 10);
   }
 
-  private;
 }

@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post/entities/post.entities';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/user.entities';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -33,6 +34,12 @@ import { User } from './auth/entities/user.entities';
       synchronize: true, // only in development
     }),
     AuthModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 5,
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService],
