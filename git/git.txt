@@ -4,3 +4,61 @@ git config --get user.email to see the github user email
 
 store your global git configuration
 cat ~/.gitconfig
+
+
+single vender e commerc
+2 role delivery
+unlist 
+ad placement
+login cart
+rating reviews
+
+
+reply user review
+cash on delivery online payment
+delivery charge
+
+
+product return 
+node mailer when products 
+refund policy and add ayour review
+promo code
+light dark mode
+google login
+verify phone and email number
+
+
+rating up in top
+
+comment pagination
+
+price rage filter 0 to 2 lakh
+
+warrenty  and its days and refund
+
+analytics of selling 
+
+transaction export to excel
+product data in the excel
+
+delivery product status 
+
+
+
+//
+gyan char
+methology
+
+ef diagram 
+usecase diagram
+dfd
+
+
+water fall
+azyle
+apf format doc
+
+spiral sms
+
+
+
