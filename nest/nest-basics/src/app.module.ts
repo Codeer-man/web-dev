@@ -11,6 +11,7 @@ import { Post } from './post/entities/post.entities';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/user.entities';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -20,6 +21,13 @@ import { ThrottlerModule } from '@nestjs/throttler';
         App_Name: joi.string().default('data'),
       }),
     }),
+
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000,
+      max: 100,
+    }),
+
     HelloModule,
     UserModule,
     PostModule,
@@ -34,12 +42,14 @@ import { ThrottlerModule } from '@nestjs/throttler';
       synchronize: true, // only in development
     }),
     AuthModule,
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 5,
-      },
-    ]),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 5,
+        },
+      ],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
