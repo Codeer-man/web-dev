@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 
 enum Igender {
   MALE = "male",
@@ -14,12 +15,37 @@ interface User {
 }
 
 interface UserResponse {
-  user: User[];
+  users: User[]; // 🔁 Note: API returns `users`, not `user`
 }
-async function UserData(): Promise<UserResponse> {
-  return fetch("https://dummyjson.com/users").then((data) => data.json());
+
+function fetchUserData(): Promise<UserResponse> {
+  return fetch("https://dummyjson.com/users").then((res) => res.json());
 }
 
 export default function UseHook() {
-  return <div>UseHook</div>;
+  const [userData, setUserData] = useState<UserResponse | null>(null);
+
+  useEffect(() => {
+    fetchUserData().then(setUserData);
+  }, []);
+
+  if (!userData) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <UserList users={userData.users} />
+    </div>
+  );
+}
+
+function UserList({ users }: { users: User[] }) {
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>
+          {user.firstName} {user.lastName} - {user.gender}, {user.age}
+        </li>
+      ))}
+    </ul>
+  );
 }
