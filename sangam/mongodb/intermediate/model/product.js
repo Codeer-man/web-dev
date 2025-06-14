@@ -1,0 +1,12 @@
+
+const mongoose = require('mongoose')
+
+const producrSchema = new mongoose.Schema({
+    name:String,
+    category:String,
+    price:Number,
+    inStock:Boolean,
+    tags: [String]
+})
+
+module.exports = mongoose.model("Product",producrSchema)
