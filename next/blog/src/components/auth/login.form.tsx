@@ -3,10 +3,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
+import { signIn } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { redirect, useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -17,6 +27,8 @@ type loginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
+  const route = useRouter();
+
   const loginform = useForm<loginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -29,7 +41,19 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      console.log(value);
+      const { error } = await signIn.email({
+        email: value.email,
+        password: value.password,
+        rememberMe: true,
+      });
+      if (error) {
+        toast("Something went wrong");
+        setLoading(false);
+        return;
+      } else {
+        toast("successfully logged in");
+        route.push("/");
+      }
     } catch (error) {}
   }
 
@@ -45,8 +69,7 @@ export default function LoginForm() {
               <FormControl>
                 <Input placeholder="Enter Your Email" {...field} />
               </FormControl>
-              <FormMessage/>
-
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -63,7 +86,7 @@ export default function LoginForm() {
                   {...field}
                 />
               </FormControl>
-              <FormMessage/>
+              <FormMessage />
             </FormItem>
           )}
         />

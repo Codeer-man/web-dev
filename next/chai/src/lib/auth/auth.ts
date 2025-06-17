@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { logger } from "../logger/logger";
 
-export const nextOptions: NextAuthOptions = {
+export const authoptions: NextAuthOptions = {
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID!,
@@ -36,7 +36,7 @@ export const nextOptions: NextAuthOptions = {
             .where(eq(userTable.email, credential.email))
             .limit(1);
 
-          if (findUser.length !== 0) {
+          if (!findUser.length) {
             throw new Error("User does not exit with the email");
           }
 

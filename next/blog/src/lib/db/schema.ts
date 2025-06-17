@@ -10,22 +10,24 @@ import {
 export const user = pgTable("User", {
   id: varchar("id", { length: 255 }).primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  username: varchar("username", { length: 255 }).notNull(),
-  password: varchar("password", { length: 255 }).notNull(),
-  emailverifide: boolean("emailVerifies").default(false),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  name: varchar("name", { length: 255 }).notNull(),
+  password: varchar("password", { length: 255 }).default("12345678"),
+  emailVerified: boolean("emailVerifies").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const session = pgTable("session", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => user.id),
-  token: varchar("token", { length: 255 }).notNull(),
-  expireAt: timestamp("expire_at").notNull(),
+  userId: varchar("user_id", { length: 255 })
+    .references(() => user.id)
+    .notNull(),
+  token: varchar("token", { length: 255 }),
+  expiresAt: timestamp("expires_at").notNull(),
   ipAddress: varchar("ip_address", { length: 255 }).notNull(),
   userAgent: text("user_agent"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const account = pgTable("account", {
@@ -34,8 +36,8 @@ export const account = pgTable("account", {
   accountId: varchar("account_id", { length: 255 }).notNull(),
   providerId: varchar("provider_id", { length: 255 }).notNull(),
   password: text("password"),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const post = pgTable("post", {
@@ -47,8 +49,8 @@ export const post = pgTable("post", {
   authorId: varchar("author_id", { length: 255 })
     .references(() => user.id)
     .notNull(),
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const userRelation = relations(post, ({ one }) => ({

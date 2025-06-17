@@ -1,0 +1,1 @@
+ALTER TABLE "Video" RENAME COLUMN "id" TO "_id";

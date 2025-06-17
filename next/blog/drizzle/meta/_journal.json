@@ -8,6 +8,34 @@
       "when": 1749302837918,
       "tag": "0000_parched_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1749304625132,
+      "tag": "0001_quick_speed_demon",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749982698809,
+      "tag": "0002_handy_preak",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1749983538366,
+      "tag": "0003_fixed_exodus",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1749983620624,
+      "tag": "0004_milky_blob",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,7 @@ export const video_Dimension = {
 } as const;
 
 export const videoTable = pgTable("Video", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: integer("_id").primaryKey().generatedAlwaysAsIdentity(),
   title: varchar("title", { length: 256 }).notNull(),
   description: text("description").notNull(),
   videoUrl: varchar("video_url", { length: 256 }).notNull(),
@@ -23,6 +23,7 @@ export const videoTable = pgTable("Video", {
   transformation: jsonb().default({
     height: integer().default(video_Dimension.height),
     width: integer().default(video_Dimension.width),
+    quality: integer().default(100),
   }),
   ...timestamps,
 });

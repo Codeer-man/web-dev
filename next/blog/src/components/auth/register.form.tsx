@@ -13,6 +13,8 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { signUp } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const registerSchema = z
   .object({
@@ -37,7 +39,11 @@ const registerSchema = z
 
 type registerFormValue = z.infer<typeof registerSchema>;
 
-export default function RegisterForm() {
+interface registerFormProps {
+  onSuccess?: () => void;
+}
+
+export default function RegisterForm({ onSuccess }: registerFormProps) {
   const [loading, setLoading] = useState(false);
   const registerForm = useForm<registerFormValue>({
     resolver: zodResolver(registerSchema),
@@ -53,10 +59,27 @@ export default function RegisterForm() {
     values: registerFormValue
     // e: React.FormEvent<HTMLFormElement>
   ) {
+    console.log(values);
+
     setLoading(true);
     try {
-      console.log(values);
-    } catch (error) {}
+      const { error } = await signUp.email({
+        name: values.userName,
+        email: values.email,
+        password: values.password,
+      });
+      if (error) {
+        toast("failed to create account! Please try again");
+        setLoading(false);
+        return;
+      }
+      toast("Your account has been created successfullt,");
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -116,7 +139,7 @@ export default function RegisterForm() {
               <FormLabel>confirm password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter your Password"
+                  placeholder="Enter your Confirm Password"
                   type="password"
                   {...field}
                 />

@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import { useSession } from "@/lib/auth-client";
+import UserMenu from "../auth/userMenu";
 
 export default function Header() {
+  const { data: session, isPending } = useSession();
   const router = useRouter();
 
   const Navbar = [
@@ -43,12 +46,16 @@ export default function Header() {
             <div></div>
             <div></div>
             <div className="flex items-center gap-2">
-              <Button
-                onClick={() => router.push("/auth")}
-                className="px-5 py-2 cursor-pointer"
-              >
-                Login
-              </Button>
+              {isPending ? null : session?.user ? (
+                <UserMenu user={session.user} />
+              ) : (
+                <Button
+                  onClick={() => router.push("/auth")}
+                  className="px-5 py-2 cursor-pointer"
+                >
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -1,0 +1,155 @@
+{
+  "id": "7ce3e5f2-3d69-4300-956a-c504f97e523c",
+  "prevId": "fd6a5162-cd62-446c-9e7a-5d3d748487f1",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "_id": {
+          "name": "_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_email_unique": {
+          "name": "User_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Video": {
+      "name": "Video",
+      "schema": "",
+      "columns": {
+        "_id": {
+          "name": "_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "Video__id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "video_url": {
+          "name": "video_url",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "thumnail_url": {
+          "name": "thumnail_url",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "controls": {
+          "name": "controls",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "transformation": {
+          "name": "transformation",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"height\":{\"config\":{\"name\":\"\",\"keyAsName\":true,\"notNull\":false,\"default\":1080,\"hasDefault\":true,\"primaryKey\":false,\"isUnique\":false,\"dataType\":\"number\",\"columnType\":\"PgInteger\"},\"foreignKeyConfigs\":[]},\"width\":{\"config\":{\"name\":\"\",\"keyAsName\":true,\"notNull\":false,\"default\":1920,\"hasDefault\":true,\"primaryKey\":false,\"isUnique\":false,\"dataType\":\"number\",\"columnType\":\"PgInteger\"},\"foreignKeyConfigs\":[]}}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
