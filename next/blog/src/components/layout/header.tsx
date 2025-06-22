@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { useSession } from "@/lib/auth-client";
 import UserMenu from "../auth/userMenu";
+import ThemeToggle from "@/Theme-provider/theme-toggle";
 
 export default function Header() {
   const { data: session, isPending } = useSession();
@@ -24,9 +25,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 bg-background border-b shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo and Nav Links */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-3xl font-semibold mr-10">
+          <Link
+            href="/"
+            className="text-3xl text-fuchsia-200 font-semibold mr-10"
+          >
             Logo
           </Link>
           <nav className="flex gap-6 text-sm font-medium">
@@ -42,21 +45,20 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-6">
-          <div className="hidden md:block">
-            <div></div>
-            <div></div>
-            <div className="flex items-center gap-2">
-              {isPending ? null : session?.user ? (
-                <UserMenu user={session.user} />
-              ) : (
-                <Button
-                  onClick={() => router.push("/auth")}
-                  className="px-5 py-2 cursor-pointer"
-                >
-                  Login
-                </Button>
-              )}
-            </div>
+          <div className="hidden md:block">{/* search  */}</div>
+
+          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {isPending ? null : session?.user ? (
+              <UserMenu user={session.user} />
+            ) : (
+              <Button
+                onClick={() => router.push("/auth")}
+                className="px-5 bg-fuchsia-200 text-black py-2 cursor-pointer"
+              >
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </div>

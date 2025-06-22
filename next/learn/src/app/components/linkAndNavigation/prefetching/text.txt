@@ -1,0 +1,4 @@
+
+
+in prefetching before the user click on the link or button to naviagate the page starts to rendering
+or page starts rendering before the user the runtime environment

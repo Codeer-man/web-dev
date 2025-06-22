@@ -1,7 +1,9 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  integer,
   pgTable,
+  serial,
   text,
   timestamp,
   varchar,
@@ -40,8 +42,8 @@ export const account = pgTable("account", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const post = pgTable("post", {
-  id: varchar("id", { length: 255 }).primaryKey(),
+export const posts = pgTable("posts", {
+  id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: varchar("description", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
@@ -53,16 +55,16 @@ export const post = pgTable("post", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const userRelation = relations(post, ({ one }) => ({
+export const userRelation = relations(posts, ({ one }) => ({
   author: one(user, {
-    fields: [post.authorId],
+    fields: [posts.authorId],
     references: [user.id],
   }),
 }));
 
-export const postRelation = relations(post, ({ one }) => ({
+export const postRelation = relations(posts, ({ one }) => ({
   author: one(user, {
-    fields: [post.authorId],
+    fields: [posts.authorId],
     references: [user.id],
   }),
 }));
@@ -85,5 +87,5 @@ export const schema = {
   user,
   account,
   session,
-  post,
+  posts,
 };

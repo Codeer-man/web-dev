@@ -56,8 +56,10 @@ export default function UserMenu({ user }: userMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer" asChild>
         <Button variant={"ghost"} className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>{getInitial(user?.name) || "user"}</AvatarFallback>
+          <Avatar className="h-8 w-8 ">
+            <AvatarFallback className="">
+              {getInitial(user?.name) || "user"}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

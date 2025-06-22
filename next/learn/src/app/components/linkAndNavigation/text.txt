@@ -1,0 +1,8 @@
+
+
+routes are server side bt default which make client await for server response
+
+server rendering
+
+prefetching is skiped or partially done if there is presence of loading.tsx
+

@@ -1,0 +1,5 @@
+
+
+streaming send the part of the dynamic route after they are rendered without the whole route being rendered
+
+to access it create a loading.tsx file

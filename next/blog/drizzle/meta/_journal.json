@@ -36,6 +36,27 @@
       "when": 1749983620624,
       "tag": "0004_milky_blob",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1750591608953,
+      "tag": "0005_previous_mephistopheles",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1750591858509,
+      "tag": "0006_tan_blazing_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1750592151872,
+      "tag": "0007_cloudy_tarot",
+      "breakpoints": true
     }
   ]
 }
