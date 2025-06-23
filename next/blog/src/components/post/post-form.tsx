@@ -1,5 +1,5 @@
 "use client";
-import React, { startTransition, useTransition } from "react";
+import React, { useTransition } from "react";
 import { z } from "zod";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -7,7 +7,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createPost } from "@/actions/post-actions";
+import { createPost, editPost } from "@/actions/post-actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -24,8 +24,19 @@ const postSchema = z.object({
 
 type postFormValues = z.infer<typeof postSchema>;
 
-export default function PostForm() {
-  const [isPending, transaction] = useTransition();
+interface postEditProps {
+  isEditing: boolean;
+  post: {
+    id: number;
+    title: string;
+    description: string;
+    content: string;
+    slug: string;
+  };
+}
+
+export default function PostForm({ isEditing, post }: postEditProps) {
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const {
@@ -34,11 +45,18 @@ export default function PostForm() {
     formState: { errors },
   } = useForm<postFormValues>({
     resolver: zodResolver(postSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      content: "",
-    },
+    defaultValues:
+      isEditing && post
+        ? {
+            title: post.title,
+            description: post.description,
+            content: post.content,
+          }
+        : {
+            title: "",
+            description: "",
+            content: "",
+          },
   });
 
   async function onFormSubmit(data: postFormValues) {
@@ -50,7 +68,12 @@ export default function PostForm() {
         formData.append("content", data.content);
 
         let res;
+
+        if (post && isEditing) {
+          res = await editPost(post.id, formData);
+        }
         res = await createPost(formData);
+
         if (res.success) {
           toast("New Post has been created");
           // router.refresh();
@@ -105,7 +128,11 @@ export default function PostForm() {
       </div>
 
       <Button type="submit" disabled={isPending} className="mt-8 w-full">
-        {isPending ? "Saving Post..." : "Create Post"}
+        {isPending
+          ? "Saving Post..."
+          : isEditing
+            ? "Update Post"
+            : "Create Post"}
       </Button>
     </form>
   );
