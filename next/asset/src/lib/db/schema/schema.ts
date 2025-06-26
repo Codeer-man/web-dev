@@ -4,7 +4,11 @@ import {
   timestamp,
   boolean,
   integer,
+  serial,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { assets } from "./asset";
+import { relations } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -70,3 +74,23 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date()
   ),
 });
+
+export const usersRelatoin = relations(user, ({ many }) => ({
+  session: many(session),
+  account: many(account),
+  assets: many(assets),
+}));
+
+export const accountRelation = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const sessionRelation = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}));

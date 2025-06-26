@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Codesandbox } from "../icons/codsenbox";
 
 export default function Header() {
   const pathname = usePathname();
@@ -35,7 +36,6 @@ export default function Header() {
       },
     });
   }
-  console.log(session);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white">
@@ -43,9 +43,9 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <Link href={"/"} className="flex items-center gap-2">
             <div className="p-2 rounded-md bg-teal-500">
-              <Package className="w-5 h-5 text-white" />
+              <Codesandbox className="w-7 h-7 text-white" />
             </div>
-            <span className=" font-bold text-xl text-teal-600">
+            <span className="ml-2 font-bold text-xl text-teal-600">
               Asset Platform
             </span>
           </Link>
