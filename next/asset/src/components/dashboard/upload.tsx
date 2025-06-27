@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { PostAssetAction } from "@/actions/admin/dashboard-user";
 
 type formState = {
   title: string;
@@ -69,6 +70,8 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
   }
 
   function handleCategoryChange(value: string) {
+    console.log(value, "value");
+
     setFormData((prev) => ({ ...prev, categoryId: value }));
   }
 
@@ -93,6 +96,8 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
 
   async function handleAssetUpload(e: React.FormEvent) {
     e.preventDefault();
+    setIsUploading(true);
+    setUplaodingProgessBar(0);
     try {
       const { apiKey, timestamp, signature } = await generateSignature();
       console.log(signature);
@@ -138,12 +143,30 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
 
       formData.append("title", formdata.title);
       formData.append("categoryId", formdata.categoryId);
+      const id = formData.append("categoryId", formdata.categoryId);
       formData.append("description", formdata.description);
       formData.append("fileUrl", cloudinaryResponse.secure_url);
       formData.append("thumnail", cloudinaryResponse.secure_url);
       formData.append("publicId", cloudinaryResponse.public_id);
+
+      console.log(id, "id");
+      const result = await PostAssetAction(formData);
+      if (result.success) {
+        setOpen(false),
+          setFormData({
+            title: "",
+            description: "",
+            categoryId: "",
+            file: null,
+          });
+      } else {
+        throw new Error(result?.message);
+      }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsUploading(false);
+      setUplaodingProgessBar(0);
     }
   }
 
@@ -155,7 +178,7 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
           Upload Assets
         </Button>
       </DialogTrigger>
-      <DialogContent className=" sm:max:w-[600px]">
+      <DialogContent className=" sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Upload New Assets</DialogTitle>
           <DialogDescription>Upload new </DialogDescription>
@@ -186,7 +209,7 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
               onChange={handleFileChange}
               id="file"
               type="file"
-              accept="images/*"
+              accept="image/*"
             />
           </div>
           <div className="space-y-2">
@@ -199,7 +222,7 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
                 <SelectValue placeholder="Select a category" />
                 <SelectContent>
                   {categories.map((item: any) => (
-                    <SelectItem key={item.id} value={item.name}>
+                    <SelectItem key={item.id} value={item.id.toString()}>
                       {item.name}
                     </SelectItem>
                   ))}
@@ -207,6 +230,18 @@ export default function UploadAsset({ categories }: cateroryManageProps) {
               </SelectTrigger>
             </Select>
           </div>
+          {isUploading && uploadinProgessbar > 0 && (
+            <div className="w-full h-2 bg-stone-100  rounded-full mb-2">
+              <div
+                style={{ width: `${uploadinProgessbar}%` }}
+                className="bg-teal-400 h-1 rounded-full"
+              />
+
+              <p className="text-sm text-slate-500 mt-2 text-right">
+                {uploadinProgessbar}%
+              </p>
+            </div>
+          )}
           <DialogFooter>
             <Button type="submit">
               <Upload className="mr-2 h-5 w-5" /> submit

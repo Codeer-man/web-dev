@@ -25,7 +25,7 @@ export const assets = pgTable("assets", {
   fileUrl: text("file_url").notNull(),
   thumnail: text("thumnail_url").notNull(),
   publicId: text("public_id").notNull(),
-  isAppreoved: boolean("is_approved").notNull().default(false),
+  isAppreoved: text("is_approved").notNull().default("pending"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id),

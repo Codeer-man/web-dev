@@ -1,10 +1,27 @@
-import { getCategoriesAction } from "@/actions/admin/dashboard-user";
+import {
+  getCategoriesAction,
+  getUserAssetsActions,
+} from "@/actions/admin/dashboard-user";
 import AssetGrid from "@/components/dashboard/asset-grid";
 import UploadAsset from "@/components/dashboard/upload";
+import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
+import { headers } from "next/headers";
 import React from "react";
 
 export default async function DashBoardAssets() {
-  const [categories] = await Promise.all([getCategoriesAction()]);
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session === null) return null;
+
+  const [categories, assets] = await Promise.all([
+    getCategoriesAction(),
+    getUserAssetsActions(session?.user?.id),
+  ]);
+
+  console.log(assets);
 
   return (
     <div className=" container py-6">
@@ -13,7 +30,7 @@ export default async function DashBoardAssets() {
         <UploadAsset categories={categories || []} />
       </div>
       <div>
-        <AssetGrid />
+        <AssetGrid assets={assets} />
       </div>
     </div>
   );

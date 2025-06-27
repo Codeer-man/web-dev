@@ -15,6 +15,13 @@
       "when": 1750864279001,
       "tag": "0001_hard_falcon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751033164162,
+      "tag": "0002_minor_peter_quill",
+      "breakpoints": true
     }
   ]
 }
