@@ -1,86 +1,72 @@
 import { useState } from "react";
 import data from "./data";
-
-export default function Accordion() {
-  const [selected, setSelected] = useState(null);
+export default function () {
+  const [singleselection, setSingleSelection] = useState(null);
+  const [enableMultipleSelection, setEnableMultipleSelection] = useState(false);
   const [multipleSelection, setMultipleSelection] = useState([]);
-  const [enableMultiple, setEnableMultiple] = useState(false);
 
-  const handleSingleSelected = (prev) => {
-    setSelected(prev === selected ? null : prev);
-  };
+  function handleSingleSelection(id) {
+    if (singleselection === id) {
+      setSingleSelection(null);
+    } else {
+      setSingleSelection(id);
+    }
+  }
 
-  const handleMultipleSelection = (id) => {
-    setMultipleSelection((prevSelections) =>
-      prevSelections.includes(id)
-        ? prevSelections.filter((item) => item !== id)
-        : [...prevSelections, id]
-    );
-  };
-
-  const handleButton = () => {
-    setEnableMultiple(!enableMultiple);
-    setSelected(null);
-    setMultipleSelection([]);
-  };
+  function handleMultipleSelection(id) {
+    if (multipleSelection.includes(id)) {
+      setMultipleSelection((prev) => prev.filter((accId) => accId !== id));
+    } else {
+      setMultipleSelection((prev) => [...prev, id]);
+    }
+  }
+  console.log(multipleSelection);
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <div className="mb-4 text-center">
+    <div>
+      <h2>Accordian</h2>
+      <div>
         <button
-          onClick={handleButton}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
+          onClick={() => {
+            setEnableMultipleSelection((prev) => !prev);
+            setMultipleSelection([]);
+            setSingleSelection("");
+          }}
         >
-          {enableMultiple
+          {enableMultipleSelection
             ? "Disable Multiple Selection"
             : "Enable Multiple Selection"}
         </button>
-      </div>
-
-      {data && data.length > 0 ? (
-        data.map((dataItem) => (
-          <div key={dataItem.id} className="mb-2">
-            <div
-              onClick={
-                enableMultiple
-                  ? () => handleMultipleSelection(dataItem.id)
-                  : () => handleSingleSelected(dataItem.id)
-              }
-              className={`cursor-pointer p-4 rounded-lg shadow-md border ${
-                multipleSelection.includes(dataItem.id)
-                  ? "bg-blue-100 border-blue-500"
-                  : selected === dataItem.id
-                  ? "bg-blue-100 border-blue-500"
-                  : "bg-white border-gray-300"
-              } hover:bg-blue-50 transition duration-300`}
-            >
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-xl">{dataItem.title}</h3>
-                <span
-                  className={`${
-                    multipleSelection.includes(dataItem.id) ||
-                    selected === dataItem.id
-                      ? "text-blue-600"
-                      : "text-gray-500"
-                  } text-xl`}
-                >
-                  {multipleSelection.includes(dataItem.id) ||
-                  selected === dataItem.id
-                    ? "-"
-                    : "+"}
-                </span>
+        <div>
+          {data && data.length > 0 ? (
+            data.map((dataI) => (
+              <div key={dataI.id}>
+                <div>
+                  <h3
+                    onClick={
+                      enableMultipleSelection
+                        ? () => handleMultipleSelection(dataI.id)
+                        : () => handleSingleSelection(dataI.id)
+                    }
+                  >
+                    {dataI.title}
+                  </h3>
+                  <span>+</span>
+                </div>
+                {enableMultipleSelection ? (
+                  multipleSelection.includes(dataI.id) ? (
+                    <div>{dataI.content}</div>
+                  ) : null
+                ) : singleselection === dataI.id ? (
+                  <div>{dataI.content} </div>
+                ) : null}
               </div>
-
-              {(selected === dataItem.id ||
-                multipleSelection.includes(dataItem.id)) && (
-                <div className="mt-4 text-gray-700">{dataItem.content}</div>
-              )}
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className="text-center text-gray-500">Data not found</div>
-      )}
+            ))
+          ) : (
+            <div>No data foudn</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

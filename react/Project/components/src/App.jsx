@@ -1,4 +1,3 @@
-import Accodion from "./components/accodion/Index";
 import RandomColorGen from "./components/RandomColorGenerator";
 import {
   createBrowserRouter,
@@ -14,13 +13,14 @@ import LoadMore from "./components/LoadMore";
 import SlideMenu from "./components/tree-view";
 import QrCodeGenerator from "./components/QRcode";
 import ThemeChanger from "./components/ThemeChanger";
-
+import Accordian from "./components/accodion/Index";
+import RandomImage from "./components/randomImage";
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
-        <Route path="/accodion" element={<Accodion />} />
+        <Route path="/accordion" element={<Accordian />} />
         <Route path="/randomcolor" element={<RandomColorGen />} />
         <Route path="/rating" element={<Rating stars={10} />} />
         <Route
@@ -33,14 +33,14 @@ function App() {
         <Route path="menu" element={<SlideMenu />} />
         <Route path="/qrcode" element={<QrCodeGenerator />} />
         <Route path="/theme" element={<ThemeChanger />} />
-
+        <Route path="/image" element={<RandomImage />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
     )
   );
   return (
-    <div>
+    <div className="h-screen">
       <RouterProvider router={router} />
     </div>
   );

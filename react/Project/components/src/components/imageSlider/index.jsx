@@ -1,92 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsArrowLeftCircleFill, BsArrowRightCircleFill } from "react-icons/bs";
 
 export default function ImageSlider({ url, limit = 5 }) {
-  const [image, setImage] = useState([]);
-  const [errorMsg, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0); // Set initial index to 0
+  const [images, setImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageloading, setImageLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchingData = async (GetUrl) => {
+  const fetchImages = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch(`${GetUrl}?page=1&limit=${limit}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
+      setImageLoading(true);
+      const res = await fetch(`${url}?page=1&limit=${limit}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const data = await response.json();
-      setImage(data);
+      const data = await res.json();
+      setImages(data);
+      setError(null);
     } catch (error) {
+      console.error("Error fetching images:", error);
       setError(error.message);
     } finally {
-      setLoading(false);
+      setImageLoading(false);
     }
   };
 
   useEffect(() => {
-    if (url) {
-      fetchingData(url);
-    }
+    if (url) fetchImages();
   }, [url]);
 
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? image.length - 1 : prevIndex - 1
-    );
+  const increaseIndex = () => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === image.length - 1 ? 0 : prevIndex + 1
-    );
+  const reverseIndex = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (errorMsg) {
-    return <div>Error: {errorMsg}</div>;
-  }
+  useEffect(() => {
+    if (images.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [images]);
+
+  if (error) return <p className="text-center mt-10">Error: {error}</p>;
+  if (!images.length && imageloading)
+    return <p className="text-center mt-10">Loading images...</p>;
 
   return (
-    <div className="relative w-full max-w-xl mx-auto">
-  
-      <div className="relative">
-        <button
-          onClick={goToPrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 rounded-full p-2"
-        >
-          <BsArrowLeftCircleFill size={30} />
-        </button>
-
-        {image && image.length > 0 && (
+    <div className="relative w-full max-w-xl mx-auto p-4">
+      {imageloading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-10">
+          <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <div className="relative w-full h-[400px] overflow-hidden rounded-xl shadow-lg">
+        {images.length > 0 && (
           <img
-            src={image[currentIndex].download_url}
-            alt={image[currentIndex].id}
-            key={image[currentIndex].id}
-            className="w-full h-64 object-cover rounded-md shadow-lg"
+            onLoad={() => setImageLoading(false)}
+            src={images[currentIndex].download_url}
+            alt={images[currentIndex].author}
+            className={`w-full h-full object-cover object-center transition-all duration-500 ${
+              imageloading ? "blur-sm scale-105" : ""
+            }`}
           />
         )}
 
         <button
-          onClick={goToNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 rounded-full p-2"
+          onClick={reverseIndex}
+          className="absolute top-1/2 left-4 -translate-y-1/2 text-white hover:scale-110 transition"
         >
-          <BsArrowRightCircleFill size={30} />
+          <BsArrowLeftCircleFill size={40} />
+        </button>
+
+        <button
+          onClick={increaseIndex}
+          className="absolute top-1/2 right-4 -translate-y-1/2 text-white hover:scale-110 transition"
+        >
+          <BsArrowRightCircleFill size={40} />
         </button>
       </div>
-
-      <div className="flex justify-center mt-4">
-        {image.map((_, index) => (
+      <div className="mt-2 w-full flex flex-1 justify-between items-center">
+        {images.map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 mx-1 rounded-full ${
-              currentIndex === index
-                ? "bg-gray-800"
-                : "bg-gray-400 hover:bg-gray-600"
+            onClick={() => {
+              setCurrentIndex(index);
+            }}
+            className={`w-4 h-4 rounded-full ${
+              index === currentIndex ? "bg-slate-700" : "bg-gray-400"
             }`}
           ></button>
         ))}

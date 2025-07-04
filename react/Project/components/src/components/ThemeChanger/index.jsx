@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useLocalStorage from "./UseLocalStorage";
 
 export default function ThemeChanger() {
   const [theme, setTheme] = useLocalStorage("theme", "dark");
 
-  const handleThemeChanger = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    document.body.classList.toggle("dark", newTheme === "dark");
-  };
+  function handleThemeChanger() {
+    setTheme(theme === "dark" ? "light" : "dark");
+  }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 transition duration-300">
