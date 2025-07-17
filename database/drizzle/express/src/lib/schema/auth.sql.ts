@@ -7,5 +7,7 @@ export const authTable = pgTable("Auth",{
     userName:varchar("User_name",{length:255}).unique().notNull(),
     email:varchar("email",{length:255}).notNull(),
     password:varchar("password",{length:255}).notNull(),
+    invitedBy:integer("invited_by"),
     ...timeStamp
 })
+

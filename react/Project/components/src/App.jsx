@@ -14,6 +14,9 @@ import LoadMore from "./components/LoadMore";
 import SlideMenu from "./components/tree-view";
 import QrCodeGenerator from "./components/QRcode";
 import ThemeChanger from "./components/ThemeChanger";
+import React30P from "./30reactp/page";
+import { Chart } from "./components/chart";
+
 
 
 function App() {
@@ -33,6 +36,9 @@ function App() {
         <Route path="menu" element={<SlideMenu />} />
         <Route path="/qrcode" element={<QrCodeGenerator />} />
         <Route path="/theme" element={<ThemeChanger />} />
+        <Route path="/chart" element={<Chart />} />
+
+        <Route path="/react30" element={<React30P/>}/>
 
 
         <Route path="*" element={<NotFound />} />

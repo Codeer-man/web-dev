@@ -8,5 +8,6 @@ exports.authTable = (0, pg_core_1.pgTable)("Auth", {
     userName: (0, pg_core_1.varchar)("User_name", { length: 255 }).unique().notNull(),
     email: (0, pg_core_1.varchar)("email", { length: 255 }).notNull(),
     password: (0, pg_core_1.varchar)("password", { length: 255 }).notNull(),
+    invitedBy: (0, pg_core_1.integer)("invited_by"),
     ...schema_helper_1.timeStamp
 });

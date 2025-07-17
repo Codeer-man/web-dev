@@ -1,10 +1,20 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { eq } from 'drizzle-orm';
-import { userTable } from './schema/user.sql';
-import { authTable } from './schema/auth.sql';
-  
-const db = drizzle({connection: process.env.DATABASE_URL!,casing: "snake_case"});
+import * as schema1 from "./schema/auth.sql"
+import * as schema2 from "./schema/user.sql"
+
+
+import {neon} from "@neondatabase/serverless"
+
+const sql = neon(process.env.DATABASE_URL!)
+export const db = drizzle(sql,{schema:{...schema1,...schema2}});
+
+
+//! query 
+const result = await db.query.authTable.findMany()
+
+
+console.log(result);
 
 //  async function main() {
 //   const user: typeof userTable.$inferInsert= {
@@ -27,18 +37,18 @@ const db = drizzle({connection: process.env.DATABASE_URL!,casing: "snake_case"})
    
 //   await db.delete(userTable).where(eq(userTable.email,user.email))
 // }
-async function data() {
-  const userCount = await db.$count(userTable)
-console.log(userCount,"user count");
+// async function data() {
+//   const userCount = await db.$count(userTable)
+// console.log(userCount,"user count");
 
-  await db.insert(authTable).values({
-    firstName:"manish",
-    lastName:"manandhar",
-  })
+//   await db.insert(authTable).values({
+//     firstName:"manish",
+//     lastName:"manandhar",
+//   })
 
-  console.log(await db.select().from(authTable),"auth data");
+//   console.log(await db.select().from(authTable),"auth data");
   
-}
+// }
 
 
-data()
+// data()
