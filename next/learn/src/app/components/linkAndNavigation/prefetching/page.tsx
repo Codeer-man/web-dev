@@ -8,7 +8,7 @@ export default function Prefetching() {
       {/* prefetch when the user hover or the button comes to the viewPoint */}
       <Link href={"/game/gta6"}>Go to game</Link>
       {/* no prefetching */}
-      <a href="/game/gta6">Go to game</a>
+      {/* <a href="/game/gta6">Go to game</a> */}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { Badge } from "../ui/badge";
+import { formatDistanceToNow } from "date-fns";
 
 type Assets = {
   id: string;
@@ -9,7 +10,7 @@ type Assets = {
   fileUrl: string;
   isAppreoved: string;
   categoryId: number;
-  createdAt: Date | null;
+  createdAt: Date;
 };
 
 interface AssetGridProp {
@@ -51,11 +52,15 @@ export default function AssetGrid({ assets }: AssetGridProp) {
             </div>
           </div>
           <div className="p-4">
-            <h3 className=" font-medium truncate">
-              {assets.description && (
-                <p className="text-xs text-slate-600">{assets.description} </p>
-              )}
-            </h3>
+            <h3 className=" font-medium truncate"> {assets.title} </h3>
+            {assets.description && (
+              <p className="text-xs text-slate-600">{assets.description} </p>
+            )}
+            <div className="flex justify-between items-center mt-3">
+              <span className="text-sm text-slate-400">
+                {formatDistanceToNow(new Date(assets.createdAt))}
+              </span>
+            </div>
           </div>
         </div>
       ))}

@@ -60,6 +60,13 @@ export default function RegisterForm() {
         });
         return;
       }
+
+      const enableTwoFactor = async () => {
+        const t2f = await authClient.twoFactor.enable({
+          password: data.password,
+        });
+      };
+
       router.push("/login");
       console.log("New user created");
     } catch (error) {

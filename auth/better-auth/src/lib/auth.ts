@@ -16,6 +16,7 @@ import { Pool } from "pg";
 
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
+import { twoFactor } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -23,6 +24,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
   },
   socialProviders: {
     google: {
@@ -30,6 +32,7 @@ export const auth = betterAuth({
       clientSecret: process.env.seg!,
     },
   },
+  plugins: [twoFactor()],
 });
 
 // Better Auth includes a CLI tool to help manage the schema required by the library.

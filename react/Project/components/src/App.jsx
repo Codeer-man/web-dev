@@ -13,8 +13,8 @@ import LoadMore from "./components/LoadMore";
 import SlideMenu from "./components/tree-view";
 import QrCodeGenerator from "./components/QRcode";
 import ThemeChanger from "./components/ThemeChanger";
+
 import Accordian from "./components/accodion/Index";
-import RandomImage from "./components/randomImage";
 
 function App() {
   const router = createBrowserRouter(
@@ -33,7 +33,6 @@ function App() {
         <Route path="menu" element={<SlideMenu />} />
         <Route path="/qrcode" element={<QrCodeGenerator />} />
         <Route path="/theme" element={<ThemeChanger />} />
-        <Route path="/image" element={<RandomImage />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>

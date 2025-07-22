@@ -3,7 +3,7 @@ import navLinks from "./data";
 
 function RootLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-200">
       <header className="bg-blue-600 text-white shadow-md">
         <nav className="container mx-auto p-4">
           <ul className="flex gap-4">

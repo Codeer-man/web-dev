@@ -1,0 +1,4 @@
+
+
+client components run on both server and client 
+server components runs only in server

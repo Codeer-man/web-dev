@@ -1,5 +1,5 @@
 {
-  "id": "b8879a40-81fa-4dc4-a101-196c0b236e8a",
+  "id": "384d59eb-accc-455b-805b-32ccbd3d8cd4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -42,6 +42,26 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
+        },
+        "invited_by": {
+          "name": "invited_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -56,6 +76,193 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Boolean": {
+      "name": "Boolean",
+      "schema": "",
+      "columns": {
+        "boolean": {
+          "name": "boolean",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "float": {
+          "name": "float",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fixObject": {
+          "name": "fixObject",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "binaryJson": {
+          "name": "binaryJson",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jsonb": {
+          "name": "jsonb",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time1": {
+          "name": "time1",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time2": {
+          "name": "time2",
+          "type": "time with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time3": {
+          "name": "time3",
+          "type": "time(6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time4": {
+          "name": "time4",
+          "type": "time(6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "interval": {
+          "name": "interval",
+          "type": "interval minute",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Post": {
+      "name": "Post",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "int1": {
+          "name": "int1",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 10
+        },
+        "int2": {
+          "name": "int2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'10'::int"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.serial": {
+      "name": "serial",
+      "schema": "",
+      "columns": {
+        "serial": {
+          "name": "serial",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numeric": {
+          "name": "numeric",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeric2": {
+          "name": "numeric2",
+          "type": "numeric(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeric3": {
+          "name": "numeric3",
+          "type": "numeric(100, 20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numericNum": {
+          "name": "numericNum",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numericBig": {
+          "name": "numericBig",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Character": {
+      "name": "Character",
+      "schema": "",
+      "columns": {
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "varchar": {
+          "name": "varchar",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

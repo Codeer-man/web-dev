@@ -58,19 +58,29 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col items-center justify-center h-full w-full space-y-4  border border-white"
+    >
+      <h1>client</h1>
       <input
         {...register("email")}
         type="text"
         placeholder="enter your email"
       />
-      {errors.email?.message}
+      {errors.email && (
+        <div className="font-medium text-red-500">{errors.email.message} </div>
+      )}
       <input
         {...register("password")}
         type="password"
         placeholder="enter your password"
       />
-      {errors.password?.message}
+      {errors.password && (
+        <div className="font-medium text-red-500">
+          {errors.password.message}
+        </div>
+      )}
       <button type="submit">Submit</button>
       {errors.root?.message}
     </form>

@@ -1,7 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  integer,
   pgTable,
   serial,
   text,
