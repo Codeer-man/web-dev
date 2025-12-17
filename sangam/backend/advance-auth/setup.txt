@@ -1,0 +1,26 @@
+npm init -y  // initate 
+
+npm install express@4 mongoose dotenv cookie-parser bcryptjs jsonwebtoken zod
+
+npm install -D typescript ts-node-dev @types/node @types/express@4 @types/bcryptjs @types/cookie-parser @types/jsonwebtoken
+
+
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+
+
+
+
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
