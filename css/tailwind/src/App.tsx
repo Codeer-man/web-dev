@@ -1,12 +1,22 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Lesson from "./components/lesson1/page";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Layout from "./layout";
+import Lesson1 from "./components/lesson1/page";
 
 export default function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+    },
+    {
+      path: "/finta",
+      element: <Lesson1 />,
+    },
+  ]);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Lesson />} />
-      </Routes>
-    </Router>
+    <>
+      <RouterProvider router={router} />
+    </>
   );
 }

@@ -3,7 +3,7 @@ import Hero from "./Hero";
 
 import Navbar from "./navbar";
 
-export default function Lesson() {
+export default function Lesson1() {
   return (
     <div className="h-screen relative  bg-blue-100">
       <div className="max-w-6xl mx-auto absolute inset-0 h-full w-full">

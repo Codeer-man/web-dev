@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const links = [
   {
@@ -16,6 +16,7 @@ const links = [
 ];
 
 const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <div className=" flex items-center justify-between py-4 ">
       <Link to={"/"}>
@@ -26,6 +27,7 @@ const Navbar = () => {
           alt="logoImage"
           title="Logo Image"
           width={"100px"}
+          onClick={() => navigate("/sdfg")} //window.location.reload()
         />
       </Link>
       <div className=" flex items-center gap-8">
