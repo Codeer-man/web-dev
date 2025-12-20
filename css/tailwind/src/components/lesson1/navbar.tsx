@@ -18,7 +18,7 @@ const links = [
 const Navbar = () => {
   const navigate = useNavigate();
   return (
-    <div className=" flex items-center justify-between py-4 ">
+    <div className="flex items-center justify-between py-4">
       <Link to={"/"}>
         <img
           loading="lazy"
@@ -30,17 +30,17 @@ const Navbar = () => {
           onClick={() => navigate("/sdfg")} //window.location.reload()
         />
       </Link>
-      <div className=" flex items-center gap-8">
+      <div className="flex items-center gap-8">
         {links.map((links, index) => (
           <Link
-            className=" text-neutral-800 font-medium hover:text-neutral-500 transition duration-200"
+            className="font-medium text-neutral-800 transition duration-200 hover:text-neutral-500"
             to={links.href}
             key={index}
           >
             {links.title}{" "}
           </Link>
         ))}
-        <button className="px-4 py-2 bg-[#2579F4] font-bold  shadow-lg tracking-wide  text-white rounded-lg text-shadow-lg cursor-pointer transistion duration-200 hover:bg-blue-700 ">
+        <button className="transistion cursor-pointer rounded-lg bg-[#2579F4] px-4 py-2 font-bold tracking-wide text-white shadow-lg duration-200 text-shadow-lg hover:bg-blue-700">
           Start free trial
         </button>
       </div>

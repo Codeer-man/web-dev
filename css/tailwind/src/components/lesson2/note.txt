@@ -1,0 +1,13 @@
+automatic class sorting 
+
+1. npm install -D prettier prettier-plugin-tailwindcss
+
+2. make .prettierrc.json file
+
+3 .ctrl + p
+// .prettierrc
+{
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
+
+# tailwind css default palette refrence
