@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { registerSchema } from "./auth.schema";
+import { loginSchame, registerSchema } from "./auth.schema";
 import { User } from "../../model/user.model";
-import { hashPassword } from "../../lib/hash";
+import { checkPassword, hashPassword } from "../../lib/hash";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../../lib/emaill";
+import { createAccessToken, createRefreshToken } from "../../lib/token";
 
 const getAppUrl = () => {
   return process.env.APPT_URL || `http://localhost:${process.env.PORT}`;
@@ -55,7 +56,7 @@ export async function registerHandler(req: Request, res: Response) {
       }
     );
 
-    const verifyUrl = `${getAppUrl}/auth/verify-email?token=${verifyToken}`;
+    const verifyUrl = `${getAppUrl()}/api/auth/verify-email?token=${verifyToken}`;
 
     await sendEmail(
       newlyCreatedUser.email,
@@ -116,6 +117,78 @@ export async function emailVerifyHandler(req: Request, res: Response) {
 
     return res.status(201).json({
       message: "Email is Verified.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Invalid server error",
+      error,
+    });
+  }
+}
+
+export async function loginHandler(req: Request, res: Response) {
+  try {
+    const result = loginSchame.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        message: "Invalid data!",
+        error: result.error.flatten(),
+      });
+    }
+
+    const { email, password } = result.data;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Email does not exist",
+      });
+    }
+
+    const pwd = await checkPassword(password, user.password);
+
+    if (!pwd) {
+      return res.status(400).json({
+        message: "The passwoed does not match",
+      });
+    }
+
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        message: "Your email is not verified",
+      });
+    }
+
+    const accessToken = createAccessToken(
+      user.id,
+      user.role,
+      user.tokenVersion
+    );
+
+    const refreshToken = createRefreshToken(user.id, user.tokenVersion);
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: isProd,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(201).json({
+      messager: "login successfull",
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        twoFactorEnable: user.twoFactorEnabled,
+      },
     });
   } catch (error) {
     res.status(500).json({
