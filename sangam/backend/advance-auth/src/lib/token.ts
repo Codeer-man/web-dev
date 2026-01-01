@@ -1,4 +1,4 @@
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 
 export function createAccessToken(
   userId: string,
@@ -22,4 +22,11 @@ export function createRefreshToken(
   return sign(payload, process.env.JWT_ACCESS_SECRET!, {
     expiresIn: "30min",
   });
+}
+
+export function verifyRefreshToken(token: string) {
+  return verify(token, process.env.JWT_ACCESS_SECRET!) as {
+    sub: string;
+    tokenVersion: number;
+  };
 }
