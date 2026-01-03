@@ -30,3 +30,11 @@ export function verifyRefreshToken(token: string) {
     tokenVersion: number;
   };
 }
+
+export async function verifyAccessToken(token: string) {
+  return verify(token, process.env.JWT_ACCESS_SECRET!) as {
+    sub: string;
+    role: "user" | "admin";
+    tokenVersion: number;
+  };
+}
