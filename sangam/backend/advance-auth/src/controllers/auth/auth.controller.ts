@@ -10,6 +10,7 @@ import {
   verifyRefreshToken,
 } from "../../lib/token";
 import crypto from "crypto";
+import { authenticator } from "otplib";
 
 const getAppUrl = () => {
   return process.env.APPT_URL || `http://localhost:${process.env.PORT}`;
@@ -142,7 +143,7 @@ export async function loginHandler(req: Request, res: Response) {
       });
     }
 
-    const { email, password } = result.data;
+    const { email, password, twoFactorCode } = result.data;
     const normalizedEmail = email.toLowerCase().trim();
 
     const user = await User.findOne({ email: normalizedEmail });
@@ -165,6 +166,28 @@ export async function loginHandler(req: Request, res: Response) {
       return res.status(403).json({
         message: "Your email is not verified",
       });
+    }
+
+    if (user.twoFactorEnabled) {
+      if (!twoFactorCode || typeof twoFactorCode !== "string") {
+        return res.status(400).json({
+          message: "Two factor code is required",
+        });
+      }
+
+      if (!user.twoFactorSecret) {
+        return res.status(400).json({
+          message: "Two factor misconfigured for this account",
+        });
+      }
+
+      const cleanCode = twoFactorCode.replace(/\s+/g, "");
+
+      const isValid = authenticator.check(cleanCode, user.twoFactorSecret);
+
+      if (!isValid) {
+        return res.status(400).json({ message: "Invalid 2FA code" });
+      }
     }
 
     const accessToken = createAccessToken(

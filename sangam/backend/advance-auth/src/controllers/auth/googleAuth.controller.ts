@@ -6,6 +6,7 @@ import { User } from "../../model/user.model";
 import crypto from "crypto";
 import { hashPassword } from "../../lib/hash";
 import { createAccessToken, createRefreshToken } from "../../lib/token";
+import { authenticator } from "otplib";
 
 function getGoogleClient() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -130,6 +131,99 @@ export async function googleAuthCallbackHanlder(req: Request, res: Response) {
     return res.status(400).json({
       message: "Missing code in callback",
       error: error,
+    });
+  }
+}
+
+export async function twoFASetupHandler(req: Request, res: Response) {
+  const authReq = req as any;
+  const authUser = authReq.user;
+
+  if (!authUser) {
+    return res.status(401).json({
+      message: "User not authenticated",
+    });
+  }
+
+  try {
+    const user = await User.findById(authUser.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const secret = authenticator.generateSecret();
+
+    const issuer = "NodeAdvancedAuthApp";
+
+    const otpAuthUrl = authenticator.keyuri(user.email, issuer, secret);
+
+    user.twoFactorSecret = secret;
+    user.twoFactorEnabled = false;
+
+    await user.save();
+
+    return res.json({
+      message: "2FA setup is enabled",
+      otpAuthUrl,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Missing code in callback",
+      error: error,
+    });
+  }
+}
+
+export async function twoFA_VerifyHandler(req: Request, res: Response) {
+  const authReq = req as any;
+  const authUser = authReq.user;
+
+  if (!authUser) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+  const { code } = req.body as { code?: string };
+
+  if (!code) {
+    return res.status(400).json({ message: "2FA code is required" });
+  }
+
+  try {
+    const user = await User.findById(authUser.id);
+
+    if (!user || !user.twoFactorSecret) {
+      return res.status(400).json({ message: "2FA not setup yet" });
+    }
+
+    if (!user.twoFactorSecret) {
+      return res.status(400).json({
+        message: "You dont have 2fa setup yet.",
+      });
+    }
+
+    const cleanCode = code.replace(/\s+/g, "");
+
+    const isValid = authenticator.check(code, user.twoFactorSecret);
+
+    console.log(isValid);
+
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid 2FA code" });
+    }
+
+    user.twoFactorEnabled = true;
+    await user.save();
+
+    return res.status(200).json({
+      message: "2FA enabled successfully",
+      twoFactorEnabled: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error,
     });
   }
 }

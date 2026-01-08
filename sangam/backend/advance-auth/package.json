@@ -21,6 +21,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "nodemailer": "^7.0.11",
+    "otplib": "^12.0.1",
+    "qrcode": "^1.5.4",
     "zod": "^4.2.1"
   },
   "devDependencies": {
@@ -30,6 +32,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.2",
     "@types/nodemailer": "^7.0.4",
+    "@types/qrcode": "^1.5.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }

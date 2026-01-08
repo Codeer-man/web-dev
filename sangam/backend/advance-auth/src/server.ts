@@ -15,6 +15,6 @@ async function startServer() {
 }
 
 startServer().catch((error) => {
-  console.error("Error while connecting the server");
+  console.error("Error while connecting the server", error);
   process.exit(1);
 });

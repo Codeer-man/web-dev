@@ -9,7 +9,7 @@ export default async function reqAuth(
 ) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || authHeader.startsWith("Bearer ")) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(404).json({
       message: "You are not auth user. You cannot access it",
     });

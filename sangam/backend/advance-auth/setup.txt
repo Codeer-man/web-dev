@@ -24,3 +24,11 @@ npm install -D typescript ts-node-dev @types/node @types/express@4 @types/bcrypt
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
+
+
+googel authentiocator
+otplib,qrcode
+
+google login
+"google-auth-library
+google console
