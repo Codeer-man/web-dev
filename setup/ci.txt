@@ -1,0 +1,13 @@
+client 
+npm i -D eslint prettier @eslint/js globals eslint-plugin-react-hooks eslint-plugin-react-refresh
+
+
+server
+npm i -D eslint prettier
+
+
+"scripts": {
+"lint": "eslint . --ext .js,.jsx",
+"lint:fix": "eslint . --ext .js,.jsx --fix",
+"format": "prettier --write ."
+}
