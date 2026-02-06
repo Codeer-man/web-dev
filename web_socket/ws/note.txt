@@ -1,0 +1,7 @@
+install 
+npm i ws
+npm i --save-dev @types/node @types/ws
+
+to check if the server is running
+sudo npm i -g wscat
+to use wscat -c ws://localhost:port
