@@ -1,7 +1,7 @@
 1. npm init -y
 2. npm i express mongooes dotenv cors
 
-3. npm i -D nodemon typescript ts-node @types/node @types/express @types/cors
+3. npm i -D  typescript ts-node @types/node @types/express @types/cors
 
 
 initialize Ts config

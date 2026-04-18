@@ -1,0 +1,6 @@
+npm init -y 
+
+npm i -D typescript
+
+// initialize tsconfig.json 
+npx tsc --init
