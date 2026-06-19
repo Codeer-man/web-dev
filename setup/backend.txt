@@ -15,10 +15,9 @@ sangam
 
 npm init -y  // initate 
 
-npm install express@4 mongoose dotenv cookie-parser bcryptjs jsonwebtoken zod
+npm install express mongoose dotenv  zod
 
-npm install -D typescript ts-node-dev @types/node @types/express@4 @types/bcryptjs @types/cookie-parser @types/jsonwebtoken
-
+npm install -D typescript ts-node-dev @types/node @types/express
 
 {
   "compilerOptions": {

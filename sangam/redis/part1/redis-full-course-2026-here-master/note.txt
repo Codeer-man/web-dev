@@ -1,0 +1,12 @@
+
+redis = in memorage storage data - store in  the ram of the pc very fast
+
+can ve used to cache data,rate limiting
+
+cache : store the copy of data temporarly for fast response of the future requests
+-improve database load
+-increase response time
+
+caching strategy
+i. cache aside pattern (lazy loading)
+1.check cache first, 2.if cache has data return it 3. if cache does not have data ,read from db,save in cache
