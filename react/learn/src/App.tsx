@@ -10,6 +10,8 @@ import Weather from "./components/month/07_weather";
 import GitUser from "./components/month/08_git-user";
 import Note from "./components/month/09_note";
 import Imdb from "./components/month/10_imdb";
+import Catelogy from "./components/month/11_catelogy";
+import Quiz from "./components/month/12_quiz";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -22,7 +24,7 @@ export default function App() {
     },
     {
       path: "/counter",
-      element: <Imdb />,
+      element: <Quiz />,
     },
   ]);
 
