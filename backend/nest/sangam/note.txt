@@ -1,0 +1,3 @@
+start nest project name
+
+npm i @nestjs/cofig  = hanldle the env config
