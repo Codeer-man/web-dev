@@ -1,0 +1,29 @@
+## setup
+
+npm init -y
+
+# tsconfig.base.json
+
+{
+"compilerOptions": {
+"target": "es2022",
+"module": "nodenext",
+"moduleResolution": "nodenext",
+"lib": ["ES2022"],
+"strict": true,
+"esModuleInterop": true,
+"skipLibCheck": true,
+"forceConsistentCasingInFileNames": true,
+"resolvePackageJsonImports": true,
+"outDir": "dist",
+"rootDir": "src"
+}
+}
+
+# package.json
+
+"workspaces": [
+"apps/*",
+"packages/*"
+],
+to download packages -w folder name
