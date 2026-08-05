@@ -1,16 +1,23 @@
 {
   "name": "node-microservice",
   "version": "1.0.0",
-  "private": "true",
+  "private": true,
   "description": "",
   "main": "index.js",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
-  "scripts": {},
+  "scripts": {
+    "db:migrate": "tsx script/db-migrate.ts",
+    "dev:auth": "npm run dev -w auth-service"
+  },
   "devDependencies": {
+    "@types/node": "^26.1.2",
     "tsx": "^4.23.5",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
   }
 }
