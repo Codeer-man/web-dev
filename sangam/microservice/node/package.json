@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "db:migrate": "tsx script/db-migrate.ts",
+    "dev:gateway": "npm run dev -w api-gateway",
     "dev:auth": "npm run dev -w auth-service"
   },
   "devDependencies": {
