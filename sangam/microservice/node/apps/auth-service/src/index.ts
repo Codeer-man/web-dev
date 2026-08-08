@@ -6,6 +6,7 @@ import {
   errorHanlder,
   httpLogger,
   logger,
+  requireGatewaySecret,
   successResponse,
 } from "shared";
 import authRouter from "./routes/auth.route";
@@ -24,7 +25,7 @@ app.get("/health", (_req, res) => {
   successResponse(res, { service: "auth-service" });
 });
 
-app.use("/auth", authRouter);
+app.use("/auth", requireGatewaySecret, authRouter);
 
 app.use((_req, _res, next) => {
   next(new AppError(404, "route not found"));

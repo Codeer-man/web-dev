@@ -33,7 +33,7 @@ export async function getMe(req: Request, res: Response, next: NextFunction) {
     const userId = req.header("x-user-id");
 
     if (!userId) {
-      throw new AppError(401, "Missing x-user-d header ");
+      throw new AppError(401, "Missing x-user-id header ");
     }
 
     const user = await authService.getMe(userId);

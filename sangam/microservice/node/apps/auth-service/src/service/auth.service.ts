@@ -1,9 +1,8 @@
-import { AppError } from "shared";
+import { AppError, signToken } from "shared";
 import { authRepo } from "../repo/user.repo";
 import { LoginInput, RegisterInput } from "../schema/auth.schema";
 import bcrypt from "bcryptjs";
 import { user } from "../types/auth.type";
-import { signToken } from "../utils/jwt";
 
 export async function register(input: RegisterInput): Promise<user> {
   const existingEmail = await authRepo.findByEmail(input.email);
@@ -40,7 +39,7 @@ export async function login(input: LoginInput) {
   const token = signToken({ userId: findUser.id, role: findUser.role });
 
   return {
-    token,
+    token: `Bearer ${token}`,
     findUser,
   };
 }
