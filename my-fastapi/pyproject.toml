@@ -1,0 +1,21 @@
+[project]
+name = "my-fastapi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.20.1",
+    "fastapi[standard]>=0.162.0",
+    "psycopg[binary]>=3.3.6",
+    "pwdlib[argon2]>=0.3.1",
+    "sqlalchemy[asyncio]>=2.1.6",
+    "sqlmodel>=0.0.48",
+]
+
+[project.scripts]
+my-fastapi = "my_fastapi:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
