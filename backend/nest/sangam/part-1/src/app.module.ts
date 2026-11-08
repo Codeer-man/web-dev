@@ -7,6 +7,8 @@ import { PostModule } from './post/post.module';
 import * as joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post/entities/post.entities';
+import { AuthModule } from './auth/auth.module';
+import { Auth } from './auth/entities/auth.entities';
 
 @Module({
   imports: [
@@ -24,11 +26,12 @@ import { Post } from './post/entities/post.entities';
       username: 'postgres',
       password: 'admin',
       database: 'postgres',
-      entities: [Post],
+      entities: [Post, Auth],
       synchronize: true, // in development
     }),
     HelloModule,
     PostModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

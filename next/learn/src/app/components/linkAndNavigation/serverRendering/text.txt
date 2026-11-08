@@ -1,4 +1,0 @@
-
-server rendering
-
-pages and layout are react server components by default
