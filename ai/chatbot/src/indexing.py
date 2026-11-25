@@ -4,7 +4,7 @@ from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from fileReader import read_mutiple_pdf
+from ai.chatbot.src.fileReader import read_mutiple_pdf
 
 embeddings = OllamaEmbeddings(model="nomic-embed-text")
 vector_storage = InMemoryVectorStore(embedding=embeddings)

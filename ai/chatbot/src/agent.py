@@ -1,13 +1,9 @@
 from deepagents import create_deep_agent
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage
-from tools import backend, search_documentation
+from tool import backend, search_documentation
 
-from prompts import (
-    CHUNK_ANALYST_INSTRUCTIONS,
-    RAG_WORKFLOW_INSTRUCTIONS,
-    SUBAGENT_DELEGATION_INSTRUCTIONS,
-)
+from prompts import  RAG_WORKFLOW_INSTRUCTIONS
 
 max_concurrent_analysts = 3
 
@@ -16,9 +12,9 @@ INSTUCTUTIONS = (
     + "\n\n"
     + "=" * 80
     + "\n\n"
-    + SUBAGENT_DELEGATION_INSTRUCTIONS.format(
-        max_concurrent_analysts=max_concurrent_analysts
-    )
+    # + SUBAGENT_DELEGATION_INSTRUCTIONS.format(
+    #     max_concurrent_analysts=max_concurrent_analysts
+    # )
 )
 
 chunk_analyst_subagent = {
@@ -27,7 +23,7 @@ chunk_analyst_subagent = {
         "analyse one retreived documentation chunk file"
         "Pass the use question and a single file path under /retrieved/."
     ),
-    "system_prompt": CHUNK_ANALYST_INSTRUCTIONS,
+    "system_prompt": RAG_WORKFLOW_INSTRUCTIONS,
 }
 
 model = init_chat_model(model="llama3.2:3b")

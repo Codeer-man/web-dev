@@ -1,32 +1,23 @@
-"""Streamlit interface for asking questions about uploaded documents."""
+"""Streamlit PDF question-answering app using a simple Ollama RAG pipeline."""
 
 from __future__ import annotations
 
 import hashlib
 import io
-import uuid
+import os
 
 import streamlit as st
-from deepagents import create_deep_agent
-from deepagents.backends import StateBackend
 from dotenv import load_dotenv
-from langchain.chat_models import init_chat_model
-from langchain.messages import HumanMessage
-from langchain.tools import tool
 from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_ollama import OllamaEmbeddings
+from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
+from prompts import RAG_WORKFLOW_INSTRUCTIONS
+
 load_dotenv()
-
-
-from prompts import (
-    CHUNK_ANALYST_INSTRUCTIONS,
-    RAG_WORKFLOW_INSTRUCTIONS,
-    SUBAGENT_DELEGATION_INSTRUCTIONS,
-)
 
 
 def apply_dashboard_theme() -> None:
@@ -185,24 +176,30 @@ def apply_dashboard_theme() -> None:
 
 
 def uploaded_file_to_document(uploaded_file) -> Document:
-    """Extract text from a supported Streamlit UploadedFile."""
+    """Extract text from an uploaded PDF, TXT, or Markdown file."""
     raw_data = uploaded_file.getvalue()
     suffix = uploaded_file.name.rsplit(".", 1)[-1].lower()
 
     if suffix == "pdf":
         reader = PdfReader(io.BytesIO(raw_data))
-        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        text = "\\n".join(page.extract_text() or "" for page in reader.pages)
     else:
         text = raw_data.decode("utf-8", errors="replace")
 
     if not text.strip():
-        raise ValueError(f"No readable text was found in {uploaded_file.name}.")
+        raise ValueError(
+            f"No readable text was found in {uploaded_file.name}. "
+            "If this is a scanned PDF, it needs OCR first."
+        )
 
-    return Document(page_content=text, metadata={"source": uploaded_file.name})
+    return Document(
+        page_content=text,
+        metadata={"source": uploaded_file.name},
+    )
 
 
 def file_set_id(uploaded_files) -> str:
-    """Return a stable identifier for the currently uploaded file contents."""
+    """Create an ID from uploaded file names and contents."""
     digest = hashlib.sha256()
     for uploaded_file in uploaded_files:
         digest.update(uploaded_file.name.encode("utf-8"))
@@ -210,83 +207,96 @@ def file_set_id(uploaded_files) -> str:
     return digest.hexdigest()
 
 
-def build_agent(documents: list[Document]):
-    """Build a session-local vector index and Deep Agent."""
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
-    vector_store = InMemoryVectorStore(embeddings)
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+def build_rag_pipeline(documents: list[Document]):
+    """Split documents, embed chunks, and create the Ollama chat model."""
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=800,
+        chunk_overlap=150,
+    )
     chunks = splitter.split_documents(documents)
+
+    if not chunks:
+        raise ValueError("No text chunks were created from the uploaded documents.")
+
+    embeddings = OllamaEmbeddings(
+        model=os.getenv("OLLAMA_EMBEDDING_MODEL", "nomic-embed-text")
+    )
+    vector_store = InMemoryVectorStore(embedding=embeddings)
     vector_store.add_documents(chunks)
 
-    backend = StateBackend()
+    llm = ChatOllama(
+        model=os.getenv("OLLAMA_CHAT_MODEL", "llama3.2:3b"),
+        temperature=0,
+    )
 
-    @tool(parse_docstring=True)
-    def search_documentation(query: str) -> str:
-        """Search uploaded documents and save matching chunks to the agent filesystem.
+    return vector_store, llm, len(chunks)
 
-        Args:
-            query: Natural-language search query.
 
-        Returns:
-            File paths where retrieved chunks were saved under /retrieved/.
-        """
-        retrieved_docs = vector_store.similarity_search(query, k=min(4, len(chunks)))
-        batch_id = uuid.uuid4().hex[:8]
-        uploads: list[tuple[str, bytes]] = []
-        saved_paths: list[str] = []
+def answer_question(question: str, vector_store, llm) -> str:
+    """Retrieve relevant PDF chunks and answer using only their contents."""
+    retrieved_docs = vector_store.similarity_search(question, k=4)
 
-        for index, doc in enumerate(retrieved_docs, start=1):
-            path = f"/retrieved/{batch_id}/chunk_{index}.md"
-            content = (
-                f"# Source: {doc.metadata.get('source', 'unknown')}\n\n"
-                f"{doc.page_content}"
+    if not retrieved_docs:
+        return "I couldn't find relevant information in the uploaded documents."
+
+    context_parts = []
+    sources = []
+    for index, doc in enumerate(retrieved_docs, start=1):
+        source = doc.metadata.get("source", "Uploaded document")
+        context_parts.append(
+            f"[Document {index}: {source}]\\n{doc.page_content}"
+        )
+        if source not in sources:
+            sources.append(source)
+
+    context = "\\n\\n---\\n\\n".join(context_parts)
+
+    messages = [
+        SystemMessage(
+            content=(
+                "You are a PDF question-answering assistant. "
+                "Answer the user's question using only the provided document context. "
+                "Do not answer with general knowledge or explain unrelated topics. "
+                "If the answer is not present in the context, clearly say: "
+                "'I couldn't find this information in the uploaded PDF(s).' "
+                "Do not invent facts. Give a clear, direct answer and preserve "
+                "important details from the documents."
             )
-            uploads.append((path, content.encode("utf-8")))
-            saved_paths.append(path)
+        ),
+        HumanMessage(
+            content=(
+                f"Question:\\n{question}\\n\\n"
+                f"Retrieved document context:\\n{context}"
+            )
+        ),
+    ]
 
-        backend.upload_files(uploads)
-        return f"Saved {len(saved_paths)} document chunks:\n" + "\n".join(saved_paths)
+    response = llm.invoke(messages)
+    answer = response.content
 
-    instructions = (
-        RAG_WORKFLOW_INSTRUCTIONS
-        + "\n\n"
-        + SUBAGENT_DELEGATION_INSTRUCTIONS.format(max_concurrent_analysts=3)
-    )
-    analyst = {
-        "name": "chunk-analyst",
-        "description": "Analyze one retrieved document chunk for the user's question.",
-        "system_prompt": CHUNK_ANALYST_INSTRUCTIONS,
-    }
-    agent = create_deep_agent(
-        model=init_chat_model(model="openai:gpt-5.5"),
-        tools=[search_documentation],
-        backend=backend,
-        system_prompt=instructions,
-        subagents=[analyst],
-    )
-    return agent, len(chunks)
+    if isinstance(answer, list):
+        answer = "\\n".join(
+            item.get("text", str(item)) if isinstance(item, dict) else str(item)
+            for item in answer
+        )
 
-
-def final_text(result: dict) -> str:
-    """Extract the last readable model message from an agent result."""
-    for message in reversed(result.get("messages", [])):
-        text = getattr(message, "text", "")
-        if text:
-            return text
-    return "The agent completed the request but did not return a text response."
+    answer = str(answer).strip()
+    source_text = ", ".join(sources)
+    return f"{answer}\\n\\n**Sources:** {source_text}"
 
 
 def main() -> None:
-    st.set_page_config(page_title="Document Q&A", page_icon="📚", layout="wide")
+    st.set_page_config(page_title="PDF Q&A", page_icon="📚", layout="wide")
     apply_dashboard_theme()
+
     st.markdown(
         """
         <section class="rag-hero">
             <div class="rag-eyebrow">LangChain · Retrieval augmented generation</div>
-            <h1 class="rag-title">Chat with your <span>knowledge</span></h1>
+            <h1 class="rag-title">Chat with your <span>PDFs</span></h1>
             <p class="rag-subtitle">
-                Upload your documents, build a semantic index, and get grounded answers
-                from an agent that searches before it speaks.
+                Upload your documents, retrieve relevant passages, and get answers
+                grounded in the content of your files.
             </p>
         </section>
         """,
@@ -299,10 +309,11 @@ def main() -> None:
     with st.sidebar:
         st.markdown("### ◈ Knowledge base")
         uploaded_files = st.file_uploader(
-            "Upload one or more files",
+            "Upload PDF, TXT, or Markdown files",
             type=["pdf", "txt", "md"],
             accept_multiple_files=True,
         )
+
         process_clicked = st.button(
             "Process documents",
             type="primary",
@@ -312,24 +323,27 @@ def main() -> None:
 
         if process_clicked:
             try:
-                current_file_set = file_set_id(uploaded_files)
-                with st.spinner("Reading, splitting, and indexing documents..."):
+                current_id = file_set_id(uploaded_files)
+                with st.spinner("Reading, splitting, and embedding documents..."):
                     documents = [
-                        uploaded_file_to_document(item) for item in uploaded_files
+                        uploaded_file_to_document(file)
+                        for file in uploaded_files
                     ]
-                    agent, chunk_count = build_agent(documents)
-                st.session_state.agent = agent
-                st.session_state.file_set_id = current_file_set
+                    vector_store, llm, chunk_count = build_rag_pipeline(documents)
+
+                st.session_state.vector_store = vector_store
+                st.session_state.llm = llm
+                st.session_state.file_set_id = current_id
                 st.session_state.messages = []
-                st.success(f"Indexed {len(documents)} files into {chunk_count} chunks.")
+                st.success(
+                    f"Processed {len(documents)} document(s) into {chunk_count} chunks."
+                )
             except Exception as exc:
                 st.error(f"Could not process the documents: {exc}")
 
         if uploaded_files and "file_set_id" in st.session_state:
             if file_set_id(uploaded_files) != st.session_state.file_set_id:
-                st.warning(
-                    "The selected files changed. Process them before asking questions."
-                )
+                st.warning("Your files changed. Process them again before asking questions.")
 
         if st.button("Clear conversation", use_container_width=True):
             st.session_state.messages = []
@@ -339,30 +353,35 @@ def main() -> None:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+    ready = "vector_store" in st.session_state and "llm" in st.session_state
     question = st.chat_input(
-        "Ask a question about your documents",
-        disabled="agent" not in st.session_state,
+        "Ask a question about your uploaded PDFs",
+        disabled=not ready,
     )
+
     if question:
         st.session_state.messages.append({"role": "user", "content": question})
         with st.chat_message("user"):
             st.markdown(question)
 
         with st.chat_message("assistant"):
-            with st.spinner("Searching and analyzing your documents..."):
+            with st.spinner("Searching your documents..."):
                 try:
-                    result = st.session_state.agent.invoke(
-                        {"messages": [HumanMessage(content=question)]}
+                    answer = answer_question(
+                        question,
+                        st.session_state.vector_store,
+                        st.session_state.llm,
                     )
-                    answer = final_text(result)
                 except Exception as exc:
                     answer = f"I couldn't answer that question: {exc}"
             st.markdown(answer)
 
-        st.session_state.messages.append({"role": "assistant", "content": answer})
+        st.session_state.messages.append(
+            {"role": "assistant", "content": answer}
+        )
 
-    if "agent" not in st.session_state:
-        st.info("Upload and process at least one document to begin.")
+    if not ready:
+        st.info("Upload and process at least one document to start chatting.")
 
 
 if __name__ == "__main__":

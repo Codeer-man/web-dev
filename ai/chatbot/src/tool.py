@@ -3,7 +3,7 @@ import uuid
 from deepagents.backends import StateBackend
 from langchain.tools import tool
 
-from indexing import vector_storage
+from ai.chatbot.src.indexing import vector_storage
 
 backend = StateBackend()
 
