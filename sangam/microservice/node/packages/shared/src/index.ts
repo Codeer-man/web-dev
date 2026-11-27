@@ -8,3 +8,7 @@ export { validate } from "./validation/validateBody";
 export type { UserRole, jwtPayload } from "./auth/types";
 export { requireGatewaySecret } from "./auth/authGateway";
 export { signToken, verifyToken } from "./auth/jwt";
+export { createKafkaClient } from "./kafka/client";
+export { createConsumer } from "./kafka/consumer";
+export { createProducer, publicJsonSafe } from "./kafka/producer";
+export { topic } from "./kafka/topics";

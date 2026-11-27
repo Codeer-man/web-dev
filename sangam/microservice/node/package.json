@@ -6,12 +6,14 @@
   "main": "index.js",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "workflow-service"
   ],
   "scripts": {
     "db:migrate": "tsx script/db-migrate.ts",
     "dev:gateway": "npm run dev -w api-gateway",
-    "dev:auth": "npm run dev -w auth-service"
+    "dev:auth": "npm run dev -w auth-service",
+    "dev:task": "npm run dev -w task-service"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "./AppError";
+import { logger } from "../log/logger";
 
 export function errorHanlder(
   err: unknown,
@@ -13,7 +14,7 @@ export function errorHanlder(
     });
   }
 
-  //logger error
+  logger.error(err, "Something went wrong");
 
   return res.status(500).json({
     success: false,
